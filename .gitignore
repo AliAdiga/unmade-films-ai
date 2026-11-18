@@ -1,0 +1,9 @@
+# local-only
+reference/
+.claude/
+.vercel/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
