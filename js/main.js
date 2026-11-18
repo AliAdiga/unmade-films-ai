@@ -279,7 +279,6 @@
   $('#slateDate').textContent = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${String(d.getFullYear()).slice(2)}`;
   let take = 0;
   const takeEl = $('#takeNo'), stick = $('#stickTop'), slate = $('#slate');
-  const flash = document.createElement('div'); flash.className = 'slate-flash'; document.body.appendChild(flash);
   function clap() {
     take++;
     if (!G || reduce) { takeEl.textContent = pad2(take); return; }
@@ -287,8 +286,9 @@
       .to(stick, { rotation: -16, duration: .35, ease: 'back.out(2)' })
       .to(stick, { rotation: 0, duration: .16, ease: 'power4.in' }, '+=.25')
       .add(() => { takeEl.textContent = pad2(take); })
-      .fromTo(slate, { x: -4, rotation: -1.1 }, { x: 0, rotation: -1.5, duration: .5, ease: 'elastic.out(1.2,.3)' })
-      .fromTo(flash, { opacity: .1 }, { opacity: 0, duration: .45, ease: 'power2.out' }, '<');
+      .fromTo(slate, { x: -4, rotation: -1.1 }, { x: 0, rotation: -1.5, duration: .5, ease: 'elastic.out(1.2,.3)', immediateRender: false })
+      // a quick glint on the slate only, never over the page
+      .fromTo('.slate-body', { boxShadow: '0 0 0 1px rgba(200,169,110,.7), 0 0 40px rgba(200,169,110,.25)' }, { boxShadow: '0 0 0 0px rgba(200,169,110,0), 0 0 0px rgba(200,169,110,0)', duration: .6, ease: 'power2.out', immediateRender: false }, '<');
   }
   $('#clapAgain').addEventListener('click', clap);
   if (motion) {
