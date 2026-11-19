@@ -672,18 +672,103 @@
     if (li && li !== current) { sticky = true; lightOn(li); } else { sticky = false; lightOff(); }
   });
 
-  /* ---------- process ---------- */
-  const steps = $$('#steps li'), imgs = $$('.stage-frame img'), cap = $('#stagecap'), no = $('#stageNo'), line = $('#stageLine');
-  const setStep = k => {
-    steps.forEach((s, i) => s.classList.toggle('on', i === k));
-    imgs.forEach((m, i) => m.classList.toggle('on', i === k));
-    cap.textContent = T('stage.from', { f: steps[k].dataset.cap });
-    no.textContent = `STEP ${pad2(k + 1)} / 06`;
-    line.style.transform = `scaleX(${(k + 1) / steps.length})`;
+  /* ---------- process: a pinned production monitor scrubbed by the scroll ---------- */
+  const prPin = $('#prPin'), steps = $$('#steps li'), prImgs = $$('#prGate img'), prNodes = $$('.pr-node');
+  const prReel = $('#prReel'), prFill = $('#prFill'), prDot = $('#prDot'), prTc = $('#prTc'), prGate = $('#prGate'), prBlur = $('#prWhipBlur'), prFlash = $('#prFlash');
+  const PHASES = steps.map(li => li.querySelector('.pr-phase').lastChild.textContent.toUpperCase());
+  let prK = -1, prST = null;
+  // the cut between shots: an old projector. The picture warms to print stock and flickers,
+  // the film slips one frame through the gate (frame line and sprocket holes rolling past
+  // under a vertical smear), then the gate weaves, the light steadies and the colour returns.
+  const prMon = $('.pr-monitor'), prFline = $('#prFline'), prPerfs = [$('#prPerfL'), $('#prPerfR')], prScratch = $('#prScratch');
+  const setBlur = v => prBlur.setAttribute('stdDeviation', `0 ${v.toFixed(1)}`);
+  const whip = (from, to, dir) => {
+    prImgs.forEach((m, i) => m.classList.toggle('on', i === to));
+    if (!G || reduce || from < 0) {
+      prImgs.forEach((m, i) => { m.style.opacity = i === to ? 1 : 0; });
+      if (G && !reduce) G.fromTo(prImgs[to], { scale: 1.06 }, { scale: 1, duration: 7, ease: 'power1.out' });
+      return;
+    }
+    const out = prImgs[from], inn = prImgs[to], d = dir < 0 ? -1 : 1;
+    const H = prGate.offsetHeight, roll = { t: 0, b: 0 }, look = { s: 0 };
+    G.killTweensOf([...prImgs, prFlash, prGate, prFline, prScratch, roll, look]);
+    prImgs.forEach(m => { if (m !== out && m !== inn) G.set(m, { opacity: 0, yPercent: 0, scale: 1 }); });
+    G.set(out, { opacity: 1, yPercent: 0 }); G.set(inn, { opacity: 1, yPercent: 100 * d, scale: 1 });
+    const paint = () => {
+      const t = roll.t;
+      G.set(out, { yPercent: -100 * t * d }); G.set(inn, { yPercent: 100 * d * (1 - t) });
+      const seam = d > 0 ? (1 - t) * H : t * H;                 // where the two frames meet
+      prFline.style.transform = `translateY(${(seam - prFline.offsetHeight / 2).toFixed(1)}px)`;
+      prPerfs.forEach(el => { el.style.backgroundPositionY = `${(-t * H * d).toFixed(1)}px`; });
+      setBlur(roll.b);
+    };
+    const grade = () => {
+      const v = look.s;
+      prGate.style.filter = `url(#prWhip) sepia(${(.7 * v).toFixed(2)}) contrast(${(1 + .25 * v).toFixed(2)}) saturate(${(1 - .35 * v).toFixed(2)}) brightness(${(1 + .08 * v).toFixed(2)})`;
+    };
+    prMon.classList.add('rolling');
+    G.timeline({ onComplete: () => { prMon.classList.remove('rolling'); prGate.style.filter = ''; setBlur(0); prFline.style.opacity = 0; } })
+      .to(look, { s: 1, duration: .14, ease: 'power1.out', onUpdate: grade }, 0)
+      .set(prFline, { opacity: 1 }, .08)
+      // the slip: fast, with a hint of the next frame catching too far before the claw settles it
+      .to(roll, { t: 1.045, duration: .42, ease: 'power3.inOut', onUpdate: paint }, .08)
+      .to(roll, { b: 22, duration: .2, ease: 'power2.in', onUpdate: paint }, .08)
+      .to(roll, { b: 0, duration: .26, ease: 'power2.out', onUpdate: paint }, .3)
+      .to(roll, { t: 1, duration: .16, ease: 'power2.out', onUpdate: paint }, .5)
+      .set(prFline, { opacity: 0 }, .66)
+      // projector flicker
+      .fromTo(prFlash, { opacity: 0 }, { keyframes: [{ opacity: .32, duration: .04 }, { opacity: .05, duration: .05 }, { opacity: .22, duration: .04 }, { opacity: 0, duration: .08 }] }, .06)
+      .fromTo(prFlash, { opacity: 0 }, { keyframes: [{ opacity: .14, duration: .05 }, { opacity: 0, duration: .07 }] }, .62)
+      .fromTo(prScratch, { opacity: 0, backgroundPositionX: '0px' }, { opacity: .8, backgroundPositionX: `${Math.round(Math.random() * 400)}px`, duration: .5, ease: 'steps(6)' }, .06)
+      .to(prScratch, { opacity: 0, duration: .3 }, .62)
+      // gate weave as it settles
+      .to(prGate, { keyframes: [{ y: -2, x: 1, duration: .05 }, { y: 1.5, x: -1, duration: .05 }, { y: -1, x: 0, duration: .05 }, { y: 0, x: 0, duration: .06 }] }, .62)
+      // the colour comes back, the shot slowly pushes in
+      .to(look, { s: 0, duration: .7, ease: 'power2.inOut', onUpdate: grade }, .7)
+      .set(out, { opacity: 0, yPercent: 0 }, .66)
+      .fromTo(inn, { scale: 1 }, { scale: 1.04, duration: 7, ease: 'power1.out' }, .7);
+    sfx.play('tick');
   };
-  const stepObs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setStep(steps.indexOf(e.target)); }), { rootMargin: '-45% 0px -54% 0px' });
-  steps.forEach(s => stepObs.observe(s));
-  if (motion) G.from('.stage', { opacity: 0, y: 40, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.process-grid', start: 'top 80%' } });
+  const setStep = (k, dir = 1) => {
+    if (k === prK) return;
+    const was = prK; prK = k;
+    steps.forEach((li, i) => { li.classList.toggle('on', i === k); li.classList.toggle('up', dir < 0); });
+    whip(was, k, dir);
+    prNodes.forEach((n, i) => { n.classList.toggle('on', i === k); n.classList.toggle('done', i < k); });
+    prReel.style.transform = `translateY(${-k * 100 / 6}%)`;
+    $('#prStep').textContent = `STEP ${pad2(k + 1)} / 06`;
+    $('#prPhase').textContent = PHASES[k];
+    $('#prCap').textContent = T('stage.from', { f: prImgs[k].dataset.cap });
+  };
+  const prProgress = p => {
+    prFill.style.transform = `scaleX(${p})`; prDot.style.left = (p * 100) + '%';
+    prTc.textContent = tc(p * 47.5);
+  };
+  setStep(0); prProgress(0);
+  const prDesk = matchMedia('(min-width: 1000px)');
+  if (motion && prDesk.matches) {
+    prST = ST.create({ trigger: prPin, start: 'top top', end: () => '+=' + Math.round(innerHeight * 3.6), pin: true, scrub: true, invalidateOnRefresh: true,
+      onUpdate: st => { const p = st.progress; prProgress(p); setStep(Math.min(5, Math.floor(p * 6)), st.direction); } });
+    prNodes.forEach(n => n.addEventListener('click', () => {
+      const k = +n.dataset.k, y = prST.start + (prST.end - prST.start) * ((k + .5) / 6);
+      if (lenis) lenis.scrollTo(y, { duration: 1 }); else window.scrollTo({ top: y, behavior: 'smooth' });
+    }));
+    G.from('.pr-stage > *', { opacity: 0, y: 50, duration: 1.2, stagger: .08, ease: 'expo.out', scrollTrigger: { trigger: prPin, start: 'top 75%' } });
+    $$('.pr-sheet dd').forEach((dd, i) => {
+      const end = +dd.textContent, n = { v: 0 }; dd.textContent = '00';
+      G.to(n, { v: end, duration: 1.4, delay: i * .15, ease: 'power2.out', onUpdate: () => { dd.textContent = pad2(Math.round(n.v)); },
+        scrollTrigger: { trigger: '.pr-sheet', start: 'top 85%' } });
+    });
+  } else {
+    // phones and reduced motion: the steps stack, each one lights as it reaches the middle
+    const stepObs = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return; const k = steps.indexOf(e.target);
+      steps.forEach((li, i) => li.classList.toggle('on', i === k)); prProgress((k + 1) / 6);
+    }), { rootMargin: '-40% 0px -50% 0px' });
+    steps.forEach(li => stepObs.observe(li));
+    prNodes.forEach(n => n.addEventListener('click', () => scrollTo('#process')));
+  }
+  prDesk.addEventListener('change', () => location.reload());
 
   /* ---------- the director's reel: timeline + horizontal reel, one component ---------- */
   const dreel = $('#dreel'), view = $('#drView'), track = $('#drTrack'), slides = $$('.dr-slide', track);

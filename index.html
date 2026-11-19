@@ -18,7 +18,7 @@
 <link rel="preload" as="image" href="media/reel-poster.webp">
 <link rel="preload" as="image" href="media/lens.webp">
 <script>try{if(localStorage.getItem("uf-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}</script>
-<link rel="stylesheet" href="css/style.css?v=31">
+<link rel="stylesheet" href="css/style.css?v=34">
 <noscript><style>.loader{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Unmade Films AI","url":"https://www.unmadefilmsai.com/","email":"dawood@unmadefilmsai.com","address":{"@type":"PostalAddress","addressLocality":"Amman","addressCountry":"JO"},"founder":{"@type":"Person","name":"Dawood Botai","jobTitle":"Director and cinematographer"},"sameAs":["https://www.instagram.com/unmadefilmsai","https://www.youtube.com/@dawoodbotai","https://www.linkedin.com/company/unmade-films-ai/"]}
@@ -386,34 +386,92 @@
   </section>
 
   <!-- PROCESS -->
-  <section class="process wrap" id="process" aria-labelledby="p-h">
-    <div class="process-head">
-      <p class="eyebrow"><span>04</span> Process</p>
-      <h2 id="p-h" class="split">From brief to master, <em>the way a film set works.</em></h2>
-      <p class="lead reveal">AI replaces the crew and the location, not the craft. Every film moves through the same six steps inside the studio.</p>
+  <section class="process" id="process" aria-labelledby="p-h">
+    <div class="wrap pr-head">
+      <div class="pr-head-l">
+        <p class="eyebrow"><span>04</span> Process</p>
+        <h2 id="p-h" class="split">From brief to master, <em>the way a film set works.</em></h2>
+      </div>
+      <div class="pr-head-r">
+        <p class="lead reveal">AI replaces the crew and the location, not the craft. Every film moves through the same six steps inside the studio.</p>
+        <dl class="pr-sheet reveal">
+          <div><dt class="tc">Steps</dt><dd>06</dd></div>
+          <div><dt class="tc">Director</dt><dd>01</dd></div>
+          <div><dt class="tc">Shoot days</dt><dd>00</dd></div>
+        </dl>
+      </div>
     </div>
-    <div class="process-grid">
-      <figure class="stage" aria-hidden="true">
-        <div class="stage-frame">
-          <img src="media/s_brief.webp" alt="" class="on">
-          <img src="media/s_light.webp" alt="" loading="lazy">
-          <img src="media/s_generate.webp" alt="" loading="lazy">
-          <img src="media/s_direct.webp" alt="" loading="lazy">
-          <img src="media/s_post.webp" alt="" loading="lazy">
-          <img src="media/s_deliver.webp" alt="" loading="lazy">
+    <div class="pr-pin" id="prPin">
+      <div class="wrap pr-stage">
+        <div class="pr-num" aria-hidden="true"><span class="pr-num-reel" id="prReel"><b>01</b><b>02</b><b>03</b><b>04</b><b>05</b><b>06</b></span></div>
+        <figure class="pr-monitor" aria-hidden="true">
+          <div class="pr-gate" id="prGate">
+          <img src="media/s_brief.webp" alt="" class="on" data-cap="Trophy">
+          <img src="media/s_light.webp" alt="" loading="lazy" data-cap="Empty Chair">
+          <img src="media/s_generate.webp" alt="" loading="lazy" data-cap="Trophy">
+          <img src="media/s_direct.webp" alt="" loading="lazy" data-cap="Empty Chair">
+          <img src="media/s_post.webp" alt="" loading="lazy" data-cap="ARD">
+          <img src="media/s_deliver.webp" alt="" loading="lazy" data-cap="Khamrah Dukhan">
+          </div>
+          <svg class="pr-fx" aria-hidden="true" width="0" height="0"><filter id="prWhip" x="-20%" y="0" width="140%" height="100%" color-interpolation-filters="sRGB"><feGaussianBlur id="prWhipBlur" stdDeviation="0 0"/></filter></svg>
+          <span class="pr-flash" id="prFlash"></span>
+          <span class="pr-perf pr-perf-l" id="prPerfL"></span><span class="pr-perf pr-perf-r" id="prPerfR"></span>
+          <span class="pr-fline" id="prFline"><i></i></span>
+          <span class="pr-scratch" id="prScratch"></span>
           <div class="vf"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+          <div class="pr-hud pr-hud-t tc"><span><i class="pr-rec"></i>REC</span><span id="prTc">00:00:00:00</span><span id="prPhase">PRE-PRODUCTION</span></div>
+          <div class="pr-hud pr-hud-b tc"><span id="prStep">STEP 01 / 06</span><span id="prCap">From the film Trophy</span></div>
+        </figure>
+        <ol class="pr-steps" id="steps">
+        <li class="on">
+          <img class="pr-thumb" src="media/s_brief.webp" alt="A pencil sketch of a trophy design" loading="lazy">
+          <p class="pr-phase tc"><span>01</span>Pre-production</p>
+          <h3><span>Brief and treatment</span></h3>
+          <p class="pr-copy">You send the idea, the product and the deadline. The Director's room turns it into a treatment: story, references and a shot list, before anything is generated.</p>
+        </li>
+        <li>
+          <img class="pr-thumb" src="media/s_light.webp" alt="Students around an empty bench in low sun" loading="lazy">
+          <p class="pr-phase tc"><span>02</span>Pre-production</p>
+          <h3><span>Frame and light</span></h3>
+          <p class="pr-copy">Every shot is designed like a real one. Lens, camera height, where the light comes from and what it falls on.</p>
+        </li>
+        <li>
+          <img class="pr-thumb" src="media/s_generate.webp" alt="Macro of an engraved silver surface" loading="lazy">
+          <p class="pr-phase tc"><span>03</span>Production</p>
+          <h3><span>Generate</span></h3>
+          <p class="pr-copy">Shots are built one by one through the studio's own production pipeline. Every take is checked for light, continuity and detail, and only the ones that hold up move on, then they're upscaled for final delivery. That's how every film leaves the studio at the same high standard.</p>
+        </li>
+        <li>
+          <img class="pr-thumb" src="media/s_direct.webp" alt="Students in a lecture hall" loading="lazy">
+          <p class="pr-phase tc"><span>04</span>Production</p>
+          <h3><span>Direct</span></h3>
+          <p class="pr-copy">Performance, timing and continuity. Each take is pushed until it works inside the cut, not only on its own.</p>
+        </li>
+        <li>
+          <img class="pr-thumb" src="media/s_post.webp" alt="Olive oil pouring from a press" loading="lazy">
+          <p class="pr-phase tc"><span>05</span>Post-production</p>
+          <h3><span>Edit, grade, sound</span></h3>
+          <p class="pr-copy">Cut, graded to one consistent look, scored and mixed in the Post room. This is where it becomes a film.</p>
+        </li>
+        <li>
+          <img class="pr-thumb" src="media/s_deliver.webp" alt="A perfume bottle on dark stone" loading="lazy">
+          <p class="pr-phase tc"><span>06</span>Delivery</p>
+          <h3><span>Deliver</span></h3>
+          <p class="pr-copy">Masters in the formats you need: 16:9, 9:16 and 4:5, cutdowns and stills, ready for broadcast and social.</p>
+        </li>
+        </ol>
+        <div class="pr-pipe" id="prPipe">
+          <div class="pr-track"><span class="pr-fill" id="prFill"></span><span class="pr-head-dot" id="prDot"></span></div>
+          <div class="pr-nodes">
+          <button class="pr-node on" type="button" data-k="0" aria-label="Step 1: Brief and treatment"><i></i><b class="tc">01</b><span>Brief</span></button>
+          <button class="pr-node" type="button" data-k="1" aria-label="Step 2: Frame and light"><i></i><b class="tc">02</b><span>Frame</span></button>
+          <button class="pr-node" type="button" data-k="2" aria-label="Step 3: Generate"><i></i><b class="tc">03</b><span>Generate</span></button>
+          <button class="pr-node" type="button" data-k="3" aria-label="Step 4: Direct"><i></i><b class="tc">04</b><span>Direct</span></button>
+          <button class="pr-node" type="button" data-k="4" aria-label="Step 5: Edit, grade, sound"><i></i><b class="tc">05</b><span>Post</span></button>
+          <button class="pr-node" type="button" data-k="5" aria-label="Step 6: Deliver"><i></i><b class="tc">06</b><span>Deliver</span></button>
+          </div>
         </div>
-        <figcaption><span class="tc" id="stageNo">STEP 01 / 06</span><span id="stagecap">From the film Trophy</span></figcaption>
-        <div class="stage-line"><span id="stageLine"></span></div>
-      </figure>
-      <ol class="steps" id="steps">
-        <li class="on" data-cap="Trophy"><img src="media/s_brief.webp" alt="A pencil sketch of a trophy design" loading="lazy"><span class="n">01</span><h3>Brief and treatment</h3><p>You send the idea, the product and the deadline. The Director's room turns it into a treatment: story, references and a shot list, before anything is generated.</p></li>
-        <li data-cap="Empty Chair"><img src="media/s_light.webp" alt="Students around an empty bench in low sun" loading="lazy"><span class="n">02</span><h3>Frame and light</h3><p>Every shot is designed like a real one. Lens, camera height, where the light comes from and what it falls on.</p></li>
-        <li data-cap="Trophy"><img src="media/s_generate.webp" alt="Macro of an engraved silver surface" loading="lazy"><span class="n">03</span><h3>Generate</h3><p>Shots are built one by one through the studio's own production pipeline. Every take is checked for light, continuity and detail, and only the ones that hold up move on, then they're upscaled for final delivery. That's how every film leaves the studio at the same high standard.</p></li>
-        <li data-cap="Empty Chair"><img src="media/s_direct.webp" alt="Students in a lecture hall" loading="lazy"><span class="n">04</span><h3>Direct</h3><p>Performance, timing and continuity. Each take is pushed until it works inside the cut, not only on its own.</p></li>
-        <li data-cap="ARD"><img src="media/s_post.webp" alt="Olive oil pouring from a press" loading="lazy"><span class="n">05</span><h3>Edit, grade, sound</h3><p>Cut, graded to one consistent look, scored and mixed in the Post room. This is where it becomes a film.</p></li>
-        <li data-cap="Khamrah Dukhan"><img src="media/s_deliver.webp" alt="A perfume bottle on dark stone" loading="lazy"><span class="n">06</span><h3>Deliver</h3><p>Masters in the formats you need: 16:9, 9:16 and 4:5, cutdowns and stills, ready for broadcast and social.</p></li>
-      </ol>
+      </div>
     </div>
   </section>
 
@@ -586,6 +644,6 @@
 <script src="js/vendor/gsap.min.js" defer></script>
 <script src="js/vendor/ScrollTrigger.min.js" defer></script>
 <script src="js/vendor/lenis.min.js" defer></script>
-<script src="js/main.js?v=24" defer></script>
+<script src="js/main.js?v=27" defer></script>
 </body>
 </html>
