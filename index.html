@@ -17,7 +17,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="media/reel-poster.webp">
 <link rel="preload" as="image" href="media/lens.webp">
-<link rel="stylesheet" href="css/style.css?v=23">
+<script>try{if(localStorage.getItem("uf-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}</script>
+<link rel="stylesheet" href="css/style.css?v=25">
 <noscript><style>.loader{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Unmade Films AI","url":"https://www.unmadefilmsai.com/","email":"dawood@unmadefilmsai.com","address":{"@type":"PostalAddress","addressLocality":"Amman","addressCountry":"JO"},"founder":{"@type":"Person","name":"Dawood Botai","jobTitle":"Director and cinematographer"},"sameAs":["https://www.instagram.com/unmadefilmsai","https://www.youtube.com/@dawoodbotai","https://www.linkedin.com/company/unmade-films-ai/"]}
@@ -32,6 +33,7 @@
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
   <symbol id="i-aperture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12.00 8.40L20.12 7.68M15.12 10.20L19.80 16.88M15.12 13.80L11.68 21.19M12.00 15.60L3.88 16.32M8.88 13.80L4.20 7.12M8.88 10.20L12.32 2.81" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+  <symbol id="i-flash" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7 6.5V5h10v1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="fl-bolt" d="M13.2 8.6 9.4 13.1h2.9l-.9 3.4 3.9-4.6h-2.9z" fill="currentColor"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
@@ -63,6 +65,7 @@
   </div>
 </div>
 
+<div class="flash-pop" id="flashPop" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 <div class="guides" aria-hidden="true"><i></i><i></i></div>
 <div class="ambient" aria-hidden="true"><i class="am-a"></i><i class="am-b"></i><i class="am-c"></i></div>
@@ -97,6 +100,11 @@
       <li><a href="https://www.youtube.com/@dawoodbotai" target="_blank" rel="noopener" aria-label="YouTube" data-tip="YouTube"><svg><use href="#i-yt"/></svg></a></li>
       <li><a href="https://www.linkedin.com/company/unmade-films-ai/" target="_blank" rel="noopener" aria-label="LinkedIn" data-tip="LinkedIn"><svg><use href="#i-li"/></svg></a></li>
     </ul>
+    <button class="flash-btn" id="flashBtn" type="button" aria-pressed="false" aria-label="Flash off. Switch to the light theme">
+      <span class="fl-ring" aria-hidden="true"></span>
+      <svg class="fl-ic" aria-hidden="true"><use href="#i-flash"/></svg>
+      <span class="fl-txt" aria-hidden="true"><b>Flash</b><i id="flashState">Off</i></span>
+    </button>
     <a class="nav-cta" href="#brief" data-magnetic>
       <span class="cta-vf" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       <span class="cta-fill" aria-hidden="true"></span>
@@ -526,6 +534,6 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
-<script src="js/main.js?v=16" defer></script>
+<script src="js/main.js?v=18" defer></script>
 </body>
 </html>

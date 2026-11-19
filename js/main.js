@@ -74,6 +74,57 @@
   }
   $('#toTop').addEventListener('click', scrollTop);
 
+  /* ---------- flash on / flash off: light and dark themes ---------- */
+  const root = document.documentElement, flashBtn = $('#flashBtn'), flashState = $('#flashState'), flashPop = $('#flashPop');
+  const isLight = () => root.dataset.theme === 'light';
+  const syncFlash = () => {
+    const on = isLight();
+    flashBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    flashBtn.setAttribute('aria-label', on ? 'Flash on. Switch to the dark theme' : 'Flash off. Switch to the light theme');
+    flashState.textContent = on ? 'On' : 'Off';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', on ? '#F1ECE3' : '#0A0A0A');
+  };
+  const applyTheme = light => {
+    if (light) root.dataset.theme = 'light'; else delete root.dataset.theme;
+    try { localStorage.setItem('uf-theme', light ? 'light' : 'dark'); } catch (_) {}
+    syncFlash();
+  };
+  syncFlash();
+  let flashBusy = false;
+  flashBtn.addEventListener('click', () => {
+    if (flashBusy) return;
+    const toLight = !isLight();
+    const r = flashBtn.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+    if (reduce) { applyTheme(toLight); return; }
+    if (!document.startViewTransition) {                      // older browsers: a quick flash pop, then switch
+      if (toLight) { flashPop.style.setProperty('--fx', x + 'px'); flashPop.style.setProperty('--fy', y + 'px'); flashPop.animate([{ opacity: 0 }, { opacity: .9, offset: .3 }, { opacity: 0 }], { duration: 450, easing: 'ease-out' }); }
+      setTimeout(() => applyTheme(toLight), toLight ? 130 : 0); return;
+    }
+    flashBusy = true;
+    const go = () => {
+      root.classList.toggle('theme-closing', !toLight);
+      const vt = document.startViewTransition(() => applyTheme(toLight));
+      vt.ready.then(() => {
+        const circle = [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`];
+        root.animate({ clipPath: toLight ? circle : [...circle].reverse() }, {
+          duration: toLight ? 900 : 760, easing: 'cubic-bezier(.65,0,.35,1)',
+          pseudoElement: toLight ? '::view-transition-new(root)' : '::view-transition-old(root)'
+        });
+        // the flash itself: the new light frame arrives over-exposed and settles, like a photo lit by a flash
+        if (toLight) root.animate({ filter: ['brightness(2.4) saturate(.6)', 'brightness(1.25)', 'brightness(1)'] }, {
+          duration: 1000, easing: 'cubic-bezier(.2,.7,.2,1)', pseudoElement: '::view-transition-new(root)'
+        });
+      }).catch(() => {});                                     // the browser may skip the animation (e.g. a hidden tab): the theme still switches
+      vt.finished.catch(() => {}).finally(() => { root.classList.remove('theme-closing'); flashBusy = false; });
+    };
+    if (toLight) {
+      // the flash charges, then fires: the light spreads from it
+      flashBtn.classList.add('charging');
+      setTimeout(() => { flashBtn.classList.remove('charging'); go(); }, 300);
+    } else go();
+  });
+
   /* ---------- split helpers ---------- */
   function splitWords(el, cls = 'w') {
     const walk = node => {

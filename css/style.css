@@ -936,3 +936,108 @@ html,body{overflow-x:clip}
 .sh-word{margin:0;font-size:15px;font-weight:600;letter-spacing:.28em;padding-left:.28em;color:var(--warm)}
 .sh-word em{color:var(--gold);letter-spacing:0;font-size:1.3em}
 .sh-slate{font-size:10px;letter-spacing:.2em;color:var(--mist)}
+
+/* =========================================================
+   v16 â€” flash on: the light theme (flash off is the dark theme)
+   ========================================================= */
+/* the flash button */
+.flash-btn{position:relative;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 10px;border-radius:3px;
+  color:#CFC9BF;background:rgba(240,237,232,.04);box-shadow:inset 0 0 0 1px rgba(240,237,232,.16);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;transition:color .35s,box-shadow .35s,background .35s}
+.flash-btn:hover,.flash-btn:focus-visible{color:var(--gold);box-shadow:inset 0 0 0 1px rgba(200,169,110,.6)}
+.flash-btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.fl-ic{width:20px;height:20px}
+.fl-ic .fl-bolt{fill:transparent;stroke:currentColor;stroke-width:1.2;transition:fill .3s}
+.fl-txt{display:grid;line-height:1.15;text-align:left}
+.fl-txt b{font-weight:500;color:#8A8680}
+.fl-txt i{font-style:normal;color:currentColor}
+/* charging ring, shown just before the pop */
+.fl-ring{position:absolute;left:10px;top:50%;width:20px;height:20px;margin-top:-10px;border-radius:50%;border:1.5px solid var(--gold);opacity:0;transform:scale(.4)}
+.flash-btn.charging .fl-ring{animation:flCharge .32s ease-out forwards}
+@keyframes flCharge{to{opacity:.9;transform:scale(1.5)}}
+/* flash on */
+html[data-theme="light"] .flash-btn{color:#7A5A22;background:rgba(154,116,52,.08);box-shadow:inset 0 0 0 1px rgba(154,116,52,.45)}
+html[data-theme="light"] .fl-ic .fl-bolt{fill:currentColor}
+html[data-theme="light"] .fl-ic{filter:drop-shadow(0 0 6px rgba(214,170,80,.55))}
+html[data-theme="light"] .fl-txt b{color:#8C8378}
+/* the pop itself */
+.flash-pop{position:fixed;inset:0;z-index:96;pointer-events:none;opacity:0;background:radial-gradient(circle at var(--fx,50%) var(--fy,0%),#fff 0,#fffaf0 22%,rgba(255,250,240,.85) 55%,rgba(255,250,240,.6))}
+@media (max-width:900px){.flash-btn .fl-txt{display:none}.flash-btn{padding:0 10px;height:44px}}
+
+/* the circular reveal (View Transitions) */
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){z-index:2}
+::view-transition-old(root){z-index:1}
+html.theme-closing::view-transition-new(root){z-index:1}
+html.theme-closing::view-transition-old(root){z-index:2}
+
+/* ---------- the light palette ---------- */
+html[data-theme="light"]{color-scheme:light;
+  --ink:#F1ECE3;--ink-2:#E9E2D6;--ink-3:#E1D9CB;--t1:#ECE5D9;--t2:#E8E0D2;--t3:#E3DACB;
+  --warm:#1C1915;--mist:#6E675D;--charcoal:#B7AE9F;--line:rgba(28,25,21,.13);
+  --gold:#9A7434;--gold-2:#B58C4A}
+html[data-theme="light"] body{background:var(--ink)}
+html[data-theme="light"] body::before{background:
+  radial-gradient(55vw 45vh at 88% -5%,rgba(214,170,90,.16),transparent 70%),
+  radial-gradient(60vw 55vh at -5% 105%,rgba(150,170,200,.14),transparent 70%),
+  linear-gradient(180deg,#F4EFE6,#EEE8DE)}
+html[data-theme="light"] body::after{background:radial-gradient(120% 100% at 50% 50%,transparent 62%,rgba(120,100,70,.12))}
+html[data-theme="light"] .grain{opacity:.05;mix-blend-mode:multiply}
+html[data-theme="light"] .guides i{background:rgba(28,25,21,.06)}
+html[data-theme="light"] .am-a{background:rgba(214,170,90,.16)}
+html[data-theme="light"] .am-b{background:rgba(140,165,210,.14)}
+html[data-theme="light"] .am-c{background:rgba(214,110,70,.07)}
+/* text greys that were tuned for the dark */
+html[data-theme="light"] .lead,html[data-theme="light"] .featured-copy p:not(.meta),html[data-theme="light"] .sub-timing label,html[data-theme="light"] .lb-desc{color:#4A443B}
+html[data-theme="light"] .rooms li,html[data-theme="light"] .steps p,html[data-theme="light"] .nav-side .l{color:#4F493F}
+html[data-theme="light"] .sub-meta span:not(.sub-k),html[data-theme="light"] .dr-meta p{color:#3A352E}
+html[data-theme="light"] .tl-title{color:#5A5349}
+html[data-theme="light"] .tl-meta,html[data-theme="light"] .rail-tc{color:#8C8378}
+html[data-theme="light"] .nav-side .l.active,html[data-theme="light"] .nav-side .l:hover{color:var(--warm)}
+/* nav, lens mount, strip, rails, menu */
+html[data-theme="light"] .nav-bar{background:linear-gradient(180deg,rgba(244,239,230,.94),rgba(238,232,222,.86));border-bottom-color:rgba(154,116,52,.22)}
+html[data-theme="light"] .lens::before{background:radial-gradient(circle,#2a2723 60%,#1a1815);border-color:rgba(154,116,52,.45)}
+html[data-theme="light"] .cam-strip{color:#4F493F}
+html[data-theme="light"] .cs-val b{color:rgba(154,116,52,.85)}
+html[data-theme="light"] .cs-track span{color:#5A5349}
+html[data-theme="light"] .cs-track{background-image:repeating-linear-gradient(90deg,rgba(28,25,21,.4) 0 1px,transparent 1px 9px),repeating-linear-gradient(90deg,rgba(154,116,52,.95) 0 1px,transparent 1px 45px)}
+html[data-theme="light"] .rail-l{background:linear-gradient(90deg,rgba(236,229,217,.8),rgba(236,229,217,.4));border-color:rgba(154,116,52,.18)}
+html[data-theme="light"] .rail-perf{background-image:repeating-linear-gradient(180deg,transparent 0 9px,rgba(28,25,21,.16) 9px 17px,transparent 17px 26px)}
+html[data-theme="light"] .rail-code{color:rgba(154,116,52,.7)}
+html[data-theme="light"] .menu{background:#EEE7DB}
+html[data-theme="light"] .burger span{background:var(--warm)}
+/* buttons */
+html[data-theme="light"] .nav-cta{background:linear-gradient(180deg,rgba(250,246,238,.95),rgba(240,233,221,.95));color:var(--warm);box-shadow:inset 0 0 0 1px rgba(154,116,52,.6),0 10px 22px -14px rgba(90,70,40,.5)}
+html[data-theme="light"] .cta-perf{background-image:repeating-linear-gradient(90deg,rgba(154,116,52,.5) 0 4px,transparent 4px 10px)}
+html[data-theme="light"] .nav-cta:hover,html[data-theme="light"] .nav-cta:focus-visible{color:#1C1915}
+html[data-theme="light"] .btn-ghost{background:rgba(255,255,255,.4);border-color:rgba(28,25,21,.22)}
+html[data-theme="light"] .btn-gold{color:#FBF7F0}
+html[data-theme="light"] .nav-focus i{border-color:var(--gold)}
+/* hero */
+html[data-theme="light"] .hero-ambient img{filter:blur(70px) saturate(1.1) brightness(1.15);opacity:.45}
+html[data-theme="light"] .hero-frame{box-shadow:0 40px 90px -30px rgba(60,45,25,.55),0 0 0 1px rgba(28,25,21,.08)}
+/* cards and panels */
+html[data-theme="light"] .sub{background:linear-gradient(180deg,#FBF8F2,#F4EEE4);border-color:#D9CFBF;box-shadow:0 40px 80px -40px rgba(90,70,40,.35)}
+html[data-theme="light"] .sub-head{border-bottom-color:#D9CFBF}
+html[data-theme="light"] .sub-row,html[data-theme="light"] fieldset.sub-timing{border-color:#E2D9CA}
+html[data-theme="light"] .sub-row>div+div{border-color:#E2D9CA}
+html[data-theme="light"] .sf input,html[data-theme="light"] .sf textarea{border-bottom-color:rgba(28,25,21,.22)}
+html[data-theme="light"] .sf input::placeholder,html[data-theme="light"] .sf textarea::placeholder{color:#B3AA9C}
+html[data-theme="light"] .sf textarea{background-image:repeating-linear-gradient(180deg,transparent 0 32px,rgba(28,25,21,.1) 32px 33px)}
+html[data-theme="light"] .sig-line{border-bottom-color:rgba(28,25,21,.3)}
+html[data-theme="light"] .sub-timing label span::before{border-color:rgba(28,25,21,.4)}
+html[data-theme="light"] .stamp{mix-blend-mode:multiply}
+html[data-theme="light"] .closing{background:radial-gradient(50% 45% at 56% 40%,rgba(222,178,108,.22),transparent 72%),linear-gradient(180deg,transparent,var(--t1) 180px,#E6DED0)}
+html[data-theme="light"] .script{box-shadow:0 40px 80px -30px rgba(90,70,40,.45),0 0 0 1px rgba(0,0,0,.08)}
+html[data-theme="light"] .polaroid{box-shadow:0 30px 60px -20px rgba(90,70,40,.45)}
+html[data-theme="light"] .tile{box-shadow:0 20px 36px -16px rgba(60,45,25,.55),inset 0 1px 0 rgba(255,255,255,.06)}
+html[data-theme="light"] .featured-media,html[data-theme="light"] .stage-frame{box-shadow:0 30px 70px -30px rgba(60,45,25,.5)}
+html[data-theme="light"] .room-pop{box-shadow:0 24px 50px -16px rgba(60,45,25,.5)}
+html[data-theme="light"] .house img{filter:drop-shadow(0 40px 60px rgba(60,45,25,.35))}
+html[data-theme="light"] .house-glow{background:radial-gradient(closest-side,rgba(214,170,90,.25),transparent)}
+html[data-theme="light"] .slate{filter:drop-shadow(0 30px 40px rgba(60,45,25,.4))}
+html[data-theme="light"] .dr-index button.on{color:#FBF7F0}
+/* the film player stays dark: it is a screening room */
+html[data-theme="light"] dialog#lb{color:#F0EDE8;--warm:#F0EDE8;--mist:#8A8680;--gold:#C8A96E;--line:rgba(240,237,232,.12);--ink:#0A0A0A}
+/* real objects keep their own colours in either light: the slate, film strips and slide mounts */
+html[data-theme="light"] .slate,html[data-theme="light"] .dr-media,html[data-theme="light"] .tiles,html[data-theme="light"] .hero-frame{--warm:#F0EDE8;--ink:#0A0A0A;--mist:#8A8680;--gold:#C8A96E;--line:rgba(240,237,232,.12)}
