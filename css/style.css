@@ -749,3 +749,133 @@ h2{font-size:clamp(38px,4.6vw,80px)}
 .lens{transition:transform .7s var(--ease),filter .5s var(--ease)}
 .lens:hover .lens-img{filter:brightness(1.12) saturate(1.1)}
 .lens::before{inset:-4px;background:radial-gradient(circle,#141311 60%,#0b0b0a);border-color:rgba(200,169,110,.3)}
+
+/* =========================================================
+   v10 — "Send a brief": a camera record control
+   ========================================================= */
+.nav-cta{position:relative;display:inline-flex;align-items:center;gap:12px;height:42px;padding:0 5px 0 5px;border-radius:4px;isolation:isolate;
+  color:var(--ink);font-size:13px;font-weight:600;letter-spacing:.01em;white-space:nowrap;
+  background:linear-gradient(180deg,#E6CC92 0%,#C8A96E 48%,#A9874D 100%);
+  box-shadow:inset 0 1px 0 rgba(255,246,220,.65),inset 0 -1px 0 rgba(70,48,18,.45),0 0 0 1px rgba(120,90,40,.55),0 10px 24px -10px rgba(200,169,110,.55);
+  transition:transform .5s var(--spring),box-shadow .5s var(--ease)}
+/* brushed-metal grain + a light sweep on hover */
+.nav-cta::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;opacity:.35;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 1px,transparent 1px 3px)}
+.nav-cta::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,250,235,.75) 48%,transparent 66%);background-size:250% 100%;background-position:130% 0;transition:background-position .9s var(--ease)}
+.nav-cta:hover::after,.nav-cta:focus-visible::after{background-position:-30% 0}
+.nav-cta:hover,.nav-cta:focus-visible{box-shadow:inset 0 1px 0 rgba(255,246,220,.75),inset 0 -1px 0 rgba(70,48,18,.45),0 0 0 1px rgba(120,90,40,.6),0 14px 34px -10px rgba(222,184,110,.85)}
+.nav-cta:active{transform:scale(.97)}
+.nav-cta:focus-visible{outline:2px solid var(--warm);outline-offset:4px}
+/* the dark record badge */
+.cta-rec{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 9px 0 8px;border-radius:3px;background:linear-gradient(180deg,#1b1a17,#0d0c0b);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.8),0 1px 0 rgba(255,246,220,.35);font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.16em;color:#E9DDC4}
+.cta-rec .rec-dot{width:7px;height:7px;background:#E2412F;box-shadow:0 0 6px 1px rgba(226,65,47,.85),0 0 0 3px rgba(226,65,47,.15)}
+.nav-cta .l-roll .ch{text-shadow:0 1.25em 0 var(--ink)}
+/* the arrow lens */
+.cta-go{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#2a2824,#0b0b0a 70%);color:var(--gold);box-shadow:inset 0 0 0 1px rgba(200,169,110,.35),0 1px 0 rgba(255,246,220,.35);transition:transform .55s var(--spring),color .3s}
+.cta-go svg{width:14px;height:14px}
+.nav-cta:hover .cta-go,.nav-cta:focus-visible .cta-go{transform:rotate(45deg);color:var(--warm)}
+/* viewfinder corners that frame the button on hover */
+.cta-vf{position:absolute;inset:-7px;pointer-events:none}
+.cta-vf i{position:absolute;width:8px;height:8px;border:0 solid var(--gold);opacity:0;transition:opacity .35s,transform .5s var(--ease)}
+.cta-vf i:nth-child(1){left:0;top:0;border-left-width:1.5px;border-top-width:1.5px;transform:translate(5px,5px)}
+.cta-vf i:nth-child(2){right:0;top:0;border-right-width:1.5px;border-top-width:1.5px;transform:translate(-5px,5px)}
+.cta-vf i:nth-child(3){left:0;bottom:0;border-left-width:1.5px;border-bottom-width:1.5px;transform:translate(5px,-5px)}
+.cta-vf i:nth-child(4){right:0;bottom:0;border-right-width:1.5px;border-bottom-width:1.5px;transform:translate(-5px,-5px)}
+.nav-cta:hover .cta-vf i,.nav-cta:focus-visible .cta-vf i{opacity:1;transform:none}
+.nav.quiet .nav-cta{opacity:0;pointer-events:none}
+.nav-cta{transition:transform .5s var(--spring),box-shadow .5s var(--ease),opacity .4s}
+@media (max-width:900px){.nav .nav-cta{display:none}}
+@media (prefers-reduced-motion:reduce){.nav-cta::after{display:none}}
+
+/* =========================================================
+   v11 — mobile hardening
+   ========================================================= */
+/* never let anything widen the page sideways */
+html,body{overflow-x:clip}
+/* the stamp waits at normal size (it only scales up while it is being stamped) */
+.stamp{transform:rotate(-14deg)}
+@media (max-width:700px){
+  .stamp{right:16px;top:84px;font-size:18px;padding:8px 12px}
+  /* slate: keep the tilt inside the screen */
+  .slate-sec{overflow:hidden;padding-inline:calc(var(--pad) + 4px)}
+  .slate{transform:rotate(-1deg);max-width:100%}
+  .clapper{height:52px}
+  .stick{height:24px}
+  .stick-top{bottom:26px}
+  /* comfortable tap targets */
+  .dr-index button{min-height:44px;min-width:46px}
+  .link-arrow,.slate-again,.to-top,.dr-yt{min-height:44px;display:inline-flex;align-items:center}
+  .dr-btn{width:44px;height:44px}
+  .sub-timing label{min-height:40px}
+  .burger{width:48px;height:48px}
+  .burger span{left:13px;right:13px}.burger span:first-child{top:20px}.burger span:last-child{top:27px}
+  /* forms: 16px+ text stops iOS from zooming in on focus */
+  .sf input,.sf textarea{font-size:17px}
+  .sub-head,.sub-row>div,.sub-meta>div,fieldset.sub-timing,.sub-foot,.sub .note{padding-inline:18px}
+  .sub-foot .nav-cta,.sub-foot .btn{width:100%;justify-content:center}
+}
+@media (max-width:380px){
+  :root{--pad:16px}
+  .hero h1{font-size:36px}
+  h2{font-size:34px}
+  .scrub{font-size:27px}
+  .slate-body dd{font-size:14px}
+  .slate-body dd.tc{font-size:14px}
+  .slate-body>div{padding:10px 10px 11px}
+  .tiles li{margin-right:-12px}
+  .tile{width:104px}
+}
+@media (max-width:700px){
+  .tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:40px;padding:0}
+  .tiles li{margin:0}
+  .tile{width:100%;aspect-ratio:1.15}
+  .script{transform:rotate(-.8deg)}
+}
+.menu-foot>a,.menu-social a{display:inline-flex;align-items:center;min-height:44px}
+.menu-social{gap:22px}
+.menu{padding-bottom:max(28px,env(safe-area-inset-bottom))}
+
+/* =========================================================
+   v12 — header ↔ hero: one camera top plate
+   ========================================================= */
+:root{--edge:max(var(--pad),calc((100vw - var(--max)) / 2 + var(--pad)))}
+/* the nav lines up with the film's column, not the screen edges */
+.nav-bar{padding:0 var(--edge)}
+.nav-end{right:var(--edge)}
+
+/* the strip */
+.cam-strip{position:absolute;left:var(--edge);right:var(--edge);top:60px;height:34px;display:none;align-items:center;gap:24px;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mist);
+  border-bottom:1px solid transparent;border-image:linear-gradient(90deg,transparent,rgba(200,169,110,.28) 20%,rgba(200,169,110,.28) 80%,transparent) 1;
+  transition:opacity .5s var(--ease),transform .6s var(--ease)}
+@media (min-width:1000px){.cam-strip{display:flex}}
+.nav.solid .cam-strip{opacity:0;transform:translateY(-8px);pointer-events:none}
+.cs-side{display:flex;align-items:center;gap:18px;white-space:nowrap;flex:1}
+.cs-right{justify-content:flex-end}
+.cs-val b{font-weight:500;color:#6E6862;margin-right:6px}
+.cs-sep{width:1px;height:12px;background:var(--line)}
+.cs-rec{display:inline-flex;align-items:center;gap:7px;color:var(--warm)}
+.cs-rec i{width:7px;height:7px;border-radius:50%;background:#E2412F;box-shadow:0 0 6px rgba(226,65,47,.8);animation:pulse 1.4s infinite}
+.cs-tc{color:var(--gold);font-size:11px}
+/* the focus scale sitting under the lens */
+.cs-ruler{position:relative;flex:0 0 clamp(300px,30vw,460px);height:34px;overflow:hidden;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+.cs-track{position:absolute;left:0;top:0;height:100%;display:flex;align-items:flex-end;gap:0;padding-bottom:6px;
+  transform:translateX(var(--fx,0px));will-change:transform;
+  background-image:repeating-linear-gradient(90deg,rgba(240,237,232,.32) 0 1px,transparent 1px 9px),repeating-linear-gradient(90deg,rgba(200,169,110,.7) 0 1px,transparent 1px 45px);
+  background-size:100% 6px,100% 11px;background-repeat:repeat-x;background-position:0 0,0 0}
+.cs-track span{flex:0 0 45px;text-align:left;font-size:9px;letter-spacing:.06em;color:#9C958B;transform:translateX(-2px)}
+.cs-index{position:absolute;left:50%;top:0;width:0;height:0;margin-left:-5px;border:5px solid transparent;border-top-color:var(--gold);border-bottom:0}
+
+/* the film itself is clean now: corners only */
+.hero{padding-top:clamp(150px,17vh,170px)}
+/* measure the column against the page width (no scrollbar), so nav, strip and film share one edge */
+.nav-bar{padding:0 max(var(--pad),calc((100% - var(--max)) / 2 + var(--pad)))}
+.nav-end{right:max(var(--pad),calc((100% - var(--max)) / 2 + var(--pad)))}
+.cam-strip{left:max(var(--pad),calc((100% - var(--max)) / 2 + var(--pad)));right:max(var(--pad),calc((100% - var(--max)) / 2 + var(--pad)))}
+.cam-strip{color:#B8B2A8}
+.cs-val b{color:rgba(200,169,110,.7)}
+.cs-track span{color:#C9C2B6}
+.cs-track{background-image:repeating-linear-gradient(90deg,rgba(240,237,232,.45) 0 1px,transparent 1px 9px),repeating-linear-gradient(90deg,rgba(200,169,110,.9) 0 1px,transparent 1px 45px)}

@@ -17,7 +17,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="media/reel-poster.webp">
 <link rel="preload" as="image" href="media/lens.webp">
-<link rel="stylesheet" href="css/style.css?v=13">
+<link rel="stylesheet" href="css/style.css?v=20">
 <noscript><style>.loader{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Unmade Films AI","url":"https://www.unmadefilmsai.com/","email":"dawood@unmadefilmsai.com","address":{"@type":"PostalAddress","addressLocality":"Amman","addressCountry":"JO"},"founder":{"@type":"Person","name":"Dawood Botai","jobTitle":"Director and cinematographer"},"sameAs":["https://www.instagram.com/unmadefilmsai","https://www.youtube.com/@dawoodbotai","https://www.linkedin.com/company/unmade-films-ai/"]}
@@ -86,8 +86,38 @@
       <li><a href="https://www.youtube.com/@dawoodbotai" target="_blank" rel="noopener" aria-label="YouTube" data-tip="YouTube"><svg><use href="#i-yt"/></svg></a></li>
       <li><a href="https://www.linkedin.com/company/unmade-films-ai/" target="_blank" rel="noopener" aria-label="LinkedIn" data-tip="LinkedIn"><svg><use href="#i-li"/></svg></a></li>
     </ul>
-    <a class="btn btn-gold nav-cta" href="#brief" data-magnetic><span class="rec-dot" aria-hidden="true"></span><span class="l-roll">Send a brief</span></a>
+    <a class="nav-cta" href="#brief" data-magnetic>
+      <span class="cta-vf" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span class="cta-rec" aria-hidden="true"><span class="rec-dot"></span>REC</span>
+      <span class="l-roll">Send a brief</span>
+      <span class="cta-go" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span>
+    </a>
     <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+  </div>
+  <!-- camera strip: the readouts and focus scale between the nav and the film -->
+  <div class="cam-strip" id="camStrip" aria-hidden="true">
+    <div class="cs-side cs-left">
+      <span class="cs-rec"><i></i>REC</span>
+      <span class="tc cs-tc" id="heroTc">00:00:00:00</span>
+      <span class="cs-sep"></span>
+      <span class="cs-val"><b>ISO</b> 800</span>
+      <span class="cs-val"><b>SHUTTER</b> 180°</span>
+    </div>
+    <div class="cs-ruler">
+      <div class="cs-track" id="csTrack">
+        <span>∞</span><span>20</span><span>10</span><span>5</span><span>3</span><span>2</span><span>1.5</span><span>1.2</span><span>1</span><span>.8</span><span>.6</span><span>m</span>
+        <span>∞</span><span>20</span><span>10</span><span>5</span><span>3</span><span>2</span><span>1.5</span><span>1.2</span><span>1</span><span>.8</span><span>.6</span><span>m</span>
+        <span>∞</span><span>20</span><span>10</span><span>5</span><span>3</span><span>2</span><span>1.5</span><span>1.2</span><span>1</span><span>.8</span><span>.6</span><span>m</span>
+      </div>
+      <i class="cs-index"></i>
+    </div>
+    <div class="cs-side cs-right">
+      <span class="cs-val"><b>ƒ</b> 2.8</span>
+      <span class="cs-val"><b>WB</b> 5600K</span>
+      <span class="cs-sep"></span>
+      <span class="cs-val">2.39:1 · 24 FPS</span>
+      <span class="cs-val"><b>AMMAN</b> <span class="tc" id="stripTime">--:--</span></span>
+    </div>
   </div>
   <div class="progress" aria-hidden="true"><span id="progress"></span></div>
 </header>
@@ -124,11 +154,6 @@
           <source src="media/reel.mp4" type="video/mp4">
         </video>
         <div class="vf hero-vf" aria-hidden="true"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i><b></b></div>
-        <div class="hud" aria-hidden="true">
-          <span class="rec"><i></i>REC</span>
-          <span class="tc" id="heroTc">00:00:00:00</span>
-          <span class="hud-r">2.39:1 · 24 FPS</span>
-        </div>
         <button class="reel-toggle" id="reelToggle" aria-label="Pause the reel"><span class="pz"></span></button>
       </div>
       <div class="hero-frame-cap" aria-hidden="true"><span>A001 · Showreel 2026</span><span>Amman 31.95°N 35.93°E</span></div>
@@ -487,6 +512,6 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
-<script src="js/main.js?v=13" defer></script>
+<script src="js/main.js?v=14" defer></script>
 </body>
 </html>

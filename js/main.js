@@ -163,7 +163,7 @@
     const dx = (lr.left + lr.width / 2) - (a.left + a.width / 2), dy = (lr.top + lr.height / 2) - (a.top + a.height / 2);
 
     G.set(frame, { opacity: 0 });
-    G.set('.hero-ambient, .hero-frame-cap, .hud, .reel-toggle, .hero-vf, .hero-aside > *', { opacity: 0 });
+    G.set('.hero-ambient, .hero-frame-cap, .cam-strip, .reel-toggle, .hero-vf, .hero-aside > *', { opacity: 0 });
     G.set(words, { yPercent: 115 });
     G.set('.nav-bar, .nav-end', { yPercent: -100, opacity: 0 });
     G.set(lensEl, { opacity: 0, scale: .6, transition: 'none' });
@@ -177,7 +177,7 @@
       frame.style.clipPath = '';
       G.set(frame, { clearProps: 'opacity' });
       G.set(lensEl, { clearProps: 'transform,opacity,transition' });
-      G.set('.nav-bar, .nav-end, .hero-ambient, .hero-frame-cap, .hud, .reel-toggle, .hero-vf, .hero-aside > *', { clearProps: 'opacity,transform' });
+      G.set('.nav-bar, .nav-end, .hero-ambient, .hero-frame-cap, .cam-strip, .reel-toggle, .hero-vf, .hero-aside > *', { clearProps: 'opacity,transform' });
       G.set(words, { clearProps: 'transform' });
       lensLive = true; lensFromScroll();
       ST.refresh();
@@ -219,7 +219,7 @@
       .set('.hero-vf', { opacity: 1 }, 'open+=1.65')
       .set(lv, { opacity: 0 }, 'open+=1.65')
       .to(words, { yPercent: 0, duration: 1.1, stagger: .05 }, 'open+=.75')
-      .to('.hero-aside > *, .hero-frame-cap, .hud, .reel-toggle', { opacity: 1, duration: .9, stagger: .05 }, 'open+=1');
+      .to('.hero-aside > *, .hero-frame-cap, .cam-strip, .reel-toggle', { opacity: 1, duration: .9, stagger: .05 }, 'open+=1');
 
     const skip = () => { if (!done) tl.progress(1); };
     $('#loaderSkip').addEventListener('click', skip);
@@ -638,9 +638,31 @@
   setInterval(() => { const s2 = Math.floor((Date.now() - t0) / 1000); rt.textContent = `${pad2(Math.floor(s2 / 60))}:${pad2(s2 % 60)}`; }, 1000);
 
   /* ---------- Amman local time ---------- */
-  const lt = $('#localTime');
-  const tick = () => { try { lt.textContent = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Amman', hour: '2-digit', minute: '2-digit' }).format(new Date()); } catch (_) {} };
+  const lt = $('#localTime'), st = $('#stripTime');
+  const tick = () => { try { const t = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Amman', hour: '2-digit', minute: '2-digit' }).format(new Date()); lt.textContent = t; if (st) st.textContent = t; } catch (_) {} };
   tick(); setInterval(tick, 30000);
+
+  /* ---------- camera strip: the focus scale under the lens ---------- */
+  const csTrack = $('#csTrack'), csRuler = $('.cs-ruler');
+  const focus = { pull: motion ? 360 : 0 };
+  const placeRuler = () => {
+    if (!csTrack || !csRuler) return;
+    const unit = 45, set = 12 * unit;                         // one copy of the scale
+    const base = csRuler.clientWidth / 2 - set - 2;           // centre the middle copy's "∞" under the index
+    const drift = (window.scrollY * .12) % set;               // turns as you scroll, looping seamlessly
+    csTrack.style.setProperty('--fx', (base - drift + focus.pull) + 'px');
+  };
+  addEventListener('scroll', placeRuler, { passive: true });
+  addEventListener('resize', placeRuler);
+  placeRuler();
+  // the focus pull: the scale sweeps in and settles once the opening is done
+  if (motion) {
+    const pull = () => G.to(focus, { pull: 0, duration: 1.8, ease: 'expo.out', onUpdate: placeRuler });
+    if (document.getElementById('loader')) {
+      const wait = setInterval(() => { if (!document.getElementById('loader')) { clearInterval(wait); pull(); } }, 120);
+      setTimeout(() => { clearInterval(wait); pull(); }, 8000);
+    } else pull();
+  }
 
   addEventListener('load', () => { if (ST) ST.refresh(); });
 })();
