@@ -32,9 +32,46 @@
     if (id.length < 2) return;
     e.preventDefault();
     closeMenu();
-    scrollTo(id);
+    if (id === '#brief') shutterTo(id); else scrollTo(id);
     if (id !== '#top') history.replaceState(null, '', id);
   }));
+
+  /* ---------- camera shutter: close on the logo, cut, open on the brief ---------- */
+  const shutter = $('#shutter'), shSvg = $('#shSvg'), shIris = $('#shIris'), shBlades = $('#shBlades'), shMark = $('#shMark');
+  let shutterBusy = false;
+  function drawIris(a, rotDeg) {
+    const W = innerWidth, H = innerHeight, cx = W / 2, cy = H / 2, R = Math.hypot(W, H) / 2 + 40;
+    shSvg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const r0 = rotDeg * Math.PI / 180;
+    const v = [...Array(6)].map((_, k) => { const t = r0 + k * Math.PI / 3; return [cx + a * Math.cos(t), cy + a * Math.sin(t)]; });
+    shIris.setAttribute('d', `M-10 -10H${W + 10}V${H + 10}H-10Z` + (a > .5 ? `M${v.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('L')}Z` : ''));
+    let d = '';
+    if (a > .5) for (let k = 0; k < 6; k++) {               // blade edges: each hexagon side carried out to the frame
+      const p = v[k], q = v[(k + 1) % 6];
+      const L = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, ux = (q[0] - p[0]) / L, uy = (q[1] - p[1]) / L;
+      d += `M${q[0].toFixed(1)} ${q[1].toFixed(1)}L${(q[0] + ux * R * 1.6).toFixed(1)} ${(q[1] + uy * R * 1.6).toFixed(1)}`;
+    }
+    shBlades.setAttribute('d', d);
+  }
+  function jumpTo(id) {
+    const el = $(id); if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - 70;
+    if (lenis) lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y);
+    if (ST) ST.update();
+  }
+  function shutterTo(id) {
+    if (!G || reduce) { jumpTo(id); return; }
+    if (shutterBusy) return; shutterBusy = true;
+    const open = Math.hypot(innerWidth, innerHeight) / 2 + 40, s = { a: open, rot: 0 };
+    shutter.classList.add('on'); drawIris(s.a, s.rot);
+    G.timeline({ onComplete: () => { shutter.classList.remove('on'); shutterBusy = false; } })
+      .to(s, { a: 0, rot: 60, duration: .62, ease: 'power3.in', onUpdate: () => drawIris(s.a, s.rot) })
+      .fromTo(shMark, { opacity: 0, scale: .86 }, { opacity: 1, scale: 1, duration: .45, ease: 'expo.out' }, '-=.12')
+      .fromTo('.sh-logo', { rotation: -90 }, { rotation: 0, duration: .6, ease: 'back.out(2)' }, '<')
+      .add(() => jumpTo(id))
+      .to(shMark, { opacity: 0, scale: 1.06, duration: .3, ease: 'power2.in' }, '+=.42')
+      .to(s, { a: open, rot: 140, duration: .8, ease: 'power3.out', onUpdate: () => drawIris(s.a, s.rot) }, '-=.08');
+  }
   $('#toTop').addEventListener('click', scrollTop);
 
   /* ---------- split helpers ---------- */
@@ -112,6 +149,20 @@
     const mo = new MutationObserver(() => { if (!side.matches(':hover')) rest(); });
     items.forEach(a => mo.observe(a, { attributes: true, attributeFilter: ['class'] }));
   });
+
+  /* ---------- keep the nav clear of the lens at every width ---------- */
+  const fitNav = () => {
+    nav.classList.remove('fit-1', 'fit-2');
+    if (innerWidth <= 900) return;                        // phones use the menu
+    const mid = nav.clientWidth / 2, clear = 67 + 22;     // lens radius + breathing room
+    const end = $('.nav-end'), left = $('.nav-left');
+    const collides = () => end.getBoundingClientRect().left < mid + clear || left.getBoundingClientRect().right > mid - clear;
+    if (collides()) nav.classList.add('fit-1');
+    if (collides()) nav.classList.add('fit-2');
+  };
+  fitNav();
+  addEventListener('resize', fitNav);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav);
 
   /* ---------- side rails: film strip + scene slate ---------- */
   const railL = $('.rail-l'), railPerf = $('#railPerf'), railCode = $('#railCode');

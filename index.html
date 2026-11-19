@@ -17,7 +17,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="media/reel-poster.webp">
 <link rel="preload" as="image" href="media/lens.webp">
-<link rel="stylesheet" href="css/style.css?v=20">
+<link rel="stylesheet" href="css/style.css?v=23">
 <noscript><style>.loader{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Unmade Films AI","url":"https://www.unmadefilmsai.com/","email":"dawood@unmadefilmsai.com","address":{"@type":"PostalAddress","addressLocality":"Amman","addressCountry":"JO"},"founder":{"@type":"Person","name":"Dawood Botai","jobTitle":"Director and cinematographer"},"sameAs":["https://www.instagram.com/unmadefilmsai","https://www.youtube.com/@dawoodbotai","https://www.linkedin.com/company/unmade-films-ai/"]}
@@ -31,6 +31,7 @@
   <symbol id="i-li" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.5 10.2V17M7.5 7.2v.1M11.2 17v-6.8M11.2 13c0-1.8 1.1-2.9 2.6-2.9s2.4 1 2.4 2.8V17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-aperture" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12.00 8.40L20.12 7.68M15.12 10.20L19.80 16.88M15.12 13.80L11.68 21.19M12.00 15.60L3.88 16.32M8.88 13.80L4.20 7.12M8.88 10.20L12.32 2.81" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
@@ -50,6 +51,16 @@
   </div>
   <div class="loader-meta" id="loaderMeta"><span>ROLL A001 · SCENE 01 · TAKE 01</span><span class="tc" id="loaderTc">00:00:00:00</span></div>
   <button class="loader-skip" id="loaderSkip">Skip intro</button>
+</div>
+
+<!-- camera shutter: used to cut straight to the brief -->
+<div class="shutter" id="shutter" aria-hidden="true">
+  <svg class="sh-svg" id="shSvg"><path class="sh-iris" id="shIris" fill-rule="evenodd"/><path class="sh-blades" id="shBlades"/></svg>
+  <div class="sh-mark" id="shMark">
+    <svg class="sh-logo"><use href="#uf"/></svg>
+    <p class="sh-word">UNMADE FILMS <em>AI</em></p>
+    <span class="sh-slate tc">SCENE 06 · SUBMISSION</span>
+  </div>
 </div>
 
 <div class="grain" aria-hidden="true"></div>
@@ -88,9 +99,12 @@
     </ul>
     <a class="nav-cta" href="#brief" data-magnetic>
       <span class="cta-vf" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      <span class="cta-rec" aria-hidden="true"><span class="rec-dot"></span>REC</span>
+      <span class="cta-fill" aria-hidden="true"></span>
+      <span class="cta-perf cta-perf-t" aria-hidden="true"></span>
+      <span class="cta-perf cta-perf-b" aria-hidden="true"></span>
+      <span class="cta-no" aria-hidden="true">06</span>
       <span class="l-roll">Send a brief</span>
-      <span class="cta-go" aria-hidden="true"><svg><use href="#i-arrow"/></svg></span>
+      <span class="cta-go" aria-hidden="true"><svg><use href="#i-aperture"/></svg></span>
     </a>
     <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
   </div>
@@ -512,6 +526,6 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
-<script src="js/main.js?v=14" defer></script>
+<script src="js/main.js?v=16" defer></script>
 </body>
 </html>
