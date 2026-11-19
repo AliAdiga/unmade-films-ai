@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Behind the frame Â· Unmade Films AI</title>
+<meta name="description" content="Behind the frame: how an Unmade Films AI film was made, from the first sketch to the graded master.">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0A0A'/%3E%3Cpath d='M12 24V12h12M40 12h12v12M52 40v12H40M24 52H12V40' fill='none' stroke='%23C8A96E' stroke-width='3.2'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23F0EDE8'/%3E%3C/svg%3E">
+<link rel="preload" as="font" type="font/woff2" href="fonts/geist-300-normal-latin.woff2" crossorigin>
+<script>try{if(localStorage.getItem("uf-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}</script>
+<link rel="stylesheet" href="css/fonts.css?v=1">
+<link rel="stylesheet" href="css/style.css?v=31">
+<link rel="stylesheet" href="css/film.css?v=2">
+</head>
+<body class="fp-body">
+<svg class="sr" aria-hidden="true">
+  <symbol id="uf" viewBox="0 0 64 64"><path d="M12 24V12h12M40 12h12v12M52 40v12H40M24 52H12V40" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="32" cy="32" r="3" fill="currentColor"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M6 18L18 6M8 6h10v10" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></symbol>
+</svg>
+
+<!-- the same camera shutter as the home page: it opens onto this film -->
+<div class="shutter on" id="shutter" aria-hidden="true">
+  <svg class="sh-svg" id="shSvg"><path class="sh-iris" id="shIris" fill-rule="evenodd"/><path class="sh-blades" id="shBlades"/></svg>
+  <div class="sh-mark" id="shMark" style="opacity:1">
+    <svg class="sh-logo"><use href="#uf"/></svg>
+    <p class="sh-word">UNMADE FILMS <em>AI</em></p>
+    <span class="sh-slate tc" id="shSlate">BEHIND THE FRAME</span>
+  </div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="fp-bar">
+  <a class="fp-back to-page" href="/#work"><svg aria-hidden="true"><use href="#i-arrow"/></svg><span>The director's reel</span></a>
+  <a class="fp-mark to-page" href="/" aria-label="Unmade Films AI home"><svg aria-hidden="true"><use href="#uf"/></svg>UNMADE FILMS <em>AI</em></a>
+  <span class="fp-no tc" id="fpNo">FILM 01 / 07</span>
+</header>
+
+<main id="main" class="fp">
+  <section class="fp-hero wrap">
+    <p class="eyebrow"><span id="fpCat">Film</span> <i>Behind the frame</i></p>
+    <h1 class="fp-title" id="fpTitle">Film</h1>
+    <div class="fp-meta tc"><span id="fpDur">0:00</span><span>Unmade Films AI Â· Amman</span></div>
+    <p class="lead fp-desc" id="fpDesc"></p>
+    <div class="fp-screen" id="fpScreen">
+      <img id="fpPoster" src="media/reel-poster.webp" alt="">
+      <button class="fp-play" id="fpPlay" type="button"><svg aria-hidden="true"><use href="#i-play"/></svg><span>Play the film</span></button>
+      <span class="fp-edge tc" aria-hidden="true" id="fpEdge">UF 5219 Â· â–¸ 01A</span>
+    </div>
+  </section>
+
+  <section class="fp-sec wrap" id="fpGradeSec">
+    <p class="eyebrow"><span>01</span> <i>The grade</i></p>
+    <h2 class="fp-h2"><span>Flat to</span> <em>graded.</em></h2>
+    <p class="lead">Drag across the frame. On the left, a simulated flat image like the one a camera records before grading; on the right, the graded frame as it was delivered.</p>
+    <div class="ba" id="baGrade" style="--pos:50%">
+      <img class="ba-b" id="gradeAfter" alt="">
+      <img class="ba-a ba-flat" id="gradeBefore" alt="" aria-hidden="true">
+      <span class="ba-line" aria-hidden="true"><i></i></span>
+      <span class="ba-tag ba-tag-l tc">Flat Â· simulated</span><span class="ba-tag ba-tag-r tc">Graded</span>
+      <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Compare the flat and graded frame">
+    </div>
+  </section>
+
+  <section class="fp-sec wrap" id="fpSketchSec" hidden>
+    <p class="eyebrow"><span>02</span> <i>From the first line</i></p>
+    <h2 class="fp-h2"><span>Sketch to</span> <em>final frame.</em></h2>
+    <div class="ba" id="baSketch" style="--pos:50%">
+      <img class="ba-b" id="sketchAfter" alt="">
+      <img class="ba-a" id="sketchBefore" alt="" aria-hidden="true">
+      <span class="ba-line" aria-hidden="true"><i></i></span>
+      <span class="ba-tag ba-tag-l tc">Sketch</span><span class="ba-tag ba-tag-r tc">Final</span>
+      <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Compare the sketch and the final frame">
+    </div>
+  </section>
+
+  <section class="fp-sec wrap" id="fpStillsSec" hidden>
+    <p class="eyebrow"><span>03</span> <i>From the production</i></p>
+    <div class="fp-stills" id="fpStills"></div>
+  </section>
+
+  <section class="fp-sec wrap">
+    <p class="eyebrow"><span>04</span> <i>How it was made</i></p>
+    <ol class="fp-steps" id="fpSteps"></ol>
+    <p class="muted fp-steps-note">Every film moves through the same six steps inside the studio. Marked steps have production stills above.</p>
+  </section>
+
+  <nav class="fp-next wrap" aria-label="Next film">
+    <a class="fp-next-link to-page" id="fpNext" href="#">
+      <span class="tc">Next film</span>
+      <strong id="fpNextTitle">Next</strong>
+      <img id="fpNextImg" src="media/reel-poster.webp" alt="" loading="lazy">
+      <svg class="ar" aria-hidden="true"><use href="#i-arrow"/></svg>
+    </a>
+  </nav>
+</main>
+
+<script src="js/films.js?v=1"></script>
+<script src="js/film.js?v=2" defer></script>
+</body>
+</html>

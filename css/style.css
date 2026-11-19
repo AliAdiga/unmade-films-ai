@@ -351,8 +351,6 @@ main>section{isolation:isolate}
 .nav.solid .badge{transform:translateX(-50%) scale(.84)}
 .progress{position:absolute;left:0;right:0;bottom:-1px;height:1px}
 .burger{display:none;width:44px;height:44px;position:relative}
-@media (max-width:1240px){.nav-social{display:none}}
-@media (max-width:1060px){.nav-left a.l:nth-of-type(3),.nav-right{display:none}}
 @media (max-width:900px){
   .nav-left,.nav .btn-gold{display:none}
   .burger{display:block}
@@ -919,8 +917,14 @@ html,body{overflow-x:clip}
 
 /* the lens keeps a clear zone: these drop out when the nav runs out of room */
 .nav.fit-1 .nav-social{display:none}
-.nav.fit-2 .nav-right{display:none}
-.nav.fit-2 .nav-left a.l:nth-of-type(3){display:none}
+/* tighter: the numbers and the flash label go, every section link stays */
+.nav.fit-2 .l-no,.nav.fit-2 .flash-btn .fl-txt{display:none}
+.nav.fit-2 .nav-side .l{padding:9px 9px;letter-spacing:.1em}
+.nav.fit-2 .nav-end{gap:14px}
+.nav.fit-2 .flash-btn{padding:0 10px}
+/* still no room: all the links move into the menu together, never one by one */
+.nav.fit-3 .nav-left,.nav.fit-3 .nav-right{display:none}
+.nav.fit-3 .burger{display:block}
 
 /* =========================================================
    v15 — camera shutter cut to the brief
@@ -938,7 +942,7 @@ html,body{overflow-x:clip}
 .sh-slate{font-size:10px;letter-spacing:.2em;color:var(--mist)}
 
 /* =========================================================
-   v16 â€” flash on: the light theme (flash off is the dark theme)
+   v16 — flash on: the light theme (flash off is the dark theme)
    ========================================================= */
 /* the flash button */
 .flash-btn{position:relative;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 12px 0 10px;border-radius:3px;
@@ -1041,3 +1045,144 @@ html[data-theme="light"] .dr-index button.on{color:#FBF7F0}
 html[data-theme="light"] dialog#lb{color:#F0EDE8;--warm:#F0EDE8;--mist:#8A8680;--gold:#C8A96E;--line:rgba(240,237,232,.12);--ink:#0A0A0A}
 /* real objects keep their own colours in either light: the slate, film strips and slide mounts */
 html[data-theme="light"] .slate,html[data-theme="light"] .dr-media,html[data-theme="light"] .tiles,html[data-theme="light"] .hero-frame{--warm:#F0EDE8;--ink:#0A0A0A;--mist:#8A8680;--gold:#C8A96E;--line:rgba(240,237,232,.12)}
+.hp{position:absolute!important;left:-9999px;width:1px;height:1px;opacity:0}
+
+/* =========================================================
+   v17 — hero: rack focus + format monitor
+   ========================================================= */
+/* rack focus: the frame sits a touch soft, a sharp circle follows the eye */
+.rack{position:absolute;inset:0;z-index:1;pointer-events:none;
+  -webkit-backdrop-filter:blur(var(--rb,2.2px));backdrop-filter:blur(var(--rb,2.2px));
+  -webkit-mask:radial-gradient(circle var(--rr,220px) at var(--mx,50%) var(--my,46%),transparent 0,transparent 38%,#000 78%);
+  mask:radial-gradient(circle var(--rr,220px) at var(--mx,50%) var(--my,46%),transparent 0,transparent 38%,#000 78%);
+  transition:opacity .6s}
+.hero-frame:not(.focusing) .rack{opacity:.85}
+.af{position:absolute;z-index:3;left:0;top:0;width:58px;height:42px;margin:-21px 0 0 -29px;pointer-events:none;opacity:0;transform:translate(var(--ax,50%),var(--ay,46%));transition:opacity .4s}
+.hero-frame.focusing .af{opacity:1}
+.af i{position:absolute;width:9px;height:9px;border:0 solid #E7D3A5}
+.af i:nth-child(1){left:0;top:0;border-left-width:1.5px;border-top-width:1.5px}
+.af i:nth-child(2){right:0;top:0;border-right-width:1.5px;border-top-width:1.5px}
+.af i:nth-child(3){left:0;bottom:0;border-left-width:1.5px;border-bottom-width:1.5px}
+.af i:nth-child(4){right:0;bottom:0;border-right-width:1.5px;border-bottom-width:1.5px}
+.af.locked i{border-color:#7BD88F}
+.af-lbl{position:absolute;left:0;top:calc(100% + 6px);font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:#F0EDE8;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+
+/* format monitor: guides for the delivery formats */
+.guide{position:absolute;z-index:2;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%);pointer-events:none;
+  box-shadow:0 0 0 200vmax rgba(5,5,5,.58);opacity:0;
+  background:
+    linear-gradient(90deg,transparent calc(33.33% - .5px),rgba(240,237,232,.28) calc(33.33% - .5px) calc(33.33% + .5px),transparent calc(33.33% + .5px) calc(66.66% - .5px),rgba(240,237,232,.28) calc(66.66% - .5px) calc(66.66% + .5px),transparent calc(66.66% + .5px)),
+    linear-gradient(180deg,transparent calc(33.33% - .5px),rgba(240,237,232,.28) calc(33.33% - .5px) calc(33.33% + .5px),transparent calc(33.33% + .5px) calc(66.66% - .5px),rgba(240,237,232,.28) calc(66.66% - .5px) calc(66.66% + .5px),transparent calc(66.66% + .5px));
+  outline:1px solid rgba(231,211,165,.85);
+  transition:width .7s var(--ease),height .7s var(--ease),opacity .5s}
+.guide.on{opacity:1}
+.g-safe{position:absolute;inset:5%;border:1px dashed rgba(240,237,232,.35)}
+.g-lbl{position:absolute;left:10px;top:8px;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:#E7D3A5;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+.fmt-mon{display:flex;align-items:center;gap:4px}
+.fm-k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mist);margin-right:6px}
+.fmt-mon button{min-width:40px;height:26px;padding:0 8px;border-radius:2px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--mist);box-shadow:inset 0 0 0 1px var(--line);transition:color .3s,box-shadow .3s,background .3s}
+.fmt-mon button:hover{color:var(--warm);box-shadow:inset 0 0 0 1px var(--gold)}
+.fmt-mon button[aria-pressed="true"]{color:var(--ink);background:var(--gold);box-shadow:none}
+.hero-frame-cap{align-items:center}
+@media (max-width:700px){
+  .hero-frame-cap{flex-wrap:wrap;gap:10px}
+  .hero-frame-cap>span:first-child{display:none}
+  .fmt-mon button{min-width:44px;height:36px}
+  .af-lbl{display:none}
+}
+@media (prefers-reduced-motion:reduce){.rack{display:none}}
+
+/* =========================================================
+   v18 — living thumbnails: the film in the gate is "running"
+   ========================================================= */
+.dr-pic.live{animation:gateWeave .22s steps(2) infinite}
+.dr-pic.live img{animation:kenBurns 9s ease-in-out infinite alternate;transition:none}
+.dr-pic::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;
+  background:radial-gradient(120% 100% at 50% 50%,transparent 55%,rgba(0,0,0,.45)),repeating-linear-gradient(180deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
+.dr-pic.live::before{opacity:1;animation:flicker .14s steps(3) infinite}
+.dr-tc{position:absolute;left:14px;top:12px;z-index:2;display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:#F0EDE8;text-shadow:0 1px 6px rgba(0,0,0,.8);opacity:0;transition:opacity .4s}
+.dr-tc i{width:6px;height:6px;border-radius:50%;background:#E2412F;box-shadow:0 0 6px rgba(226,65,47,.9);animation:pulse 1.2s infinite}
+.dr-pic.live .dr-tc{opacity:1}
+.dr-pic video.dr-prev{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.dr-pic.previewing video.dr-prev{opacity:1}
+@keyframes kenBurns{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.14) translate(-2.2%,-1.4%)}}
+@keyframes gateWeave{0%{transform:translate(0,0)}50%{transform:translate(.4px,-.3px)}100%{transform:translate(-.3px,.3px)}}
+@keyframes flicker{0%{filter:brightness(1)}50%{filter:brightness(1.06)}100%{filter:brightness(.97)}}
+@media (prefers-reduced-motion:reduce){.dr-pic.live,.dr-pic.live img,.dr-pic.live::before{animation:none}}
+
+/* =========================================================
+   v19 — end credits
+   ========================================================= */
+.credits{position:relative;margin-top:clamp(70px,10vh,110px)}
+.cr-screen{height:100vh;height:100svh;display:grid;place-items:center;padding:0 var(--pad)}
+/* the projection: a 2.39 frame with its own light falling on the room */
+.cr-frame{position:relative;width:min(100%,1120px,calc(72vh * 2.39));aspect-ratio:2.39;overflow:hidden;background:#060605;border-radius:2px;
+  box-shadow:0 0 0 1px rgba(200,169,110,.3),0 0 0 7px #0C0B0A,0 0 0 8px rgba(200,169,110,.12),0 70px 150px -40px rgba(0,0,0,.95),0 0 160px -20px rgba(231,211,165,.14)}
+/* the credits fade in and out at the top and bottom of the frame, not the frame itself */
+.cr-frame::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,#060605 0,rgba(6,6,5,0) 22%,rgba(6,6,5,0) 78%,#060605 100%)}
+
+.cr-frame::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.55));animation:crFlicker 5s steps(1) infinite}
+@keyframes crFlicker{0%,100%{opacity:1}31%{opacity:.86}33%{opacity:1}67%{opacity:.92}69%{opacity:1}}
+.cr-tc{position:absolute;left:18px;top:16px;z-index:3;font-size:9.5px;letter-spacing:.18em;color:rgba(231,211,165,.55)}
+.cr-cue{position:absolute;right:5%;top:9%;z-index:3;width:clamp(18px,2.2vw,30px);aspect-ratio:1;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(255,250,235,.95) 30%,rgba(255,240,210,.55) 55%,transparent 72%)}
+.cr-roll{position:absolute;left:0;right:0;top:0;display:grid;justify-items:center;gap:22px;padding:0 6%;text-align:center;will-change:transform}
+.cr-presents{margin:0;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(240,237,232,.55)}
+.cr-title{margin:0 0 26px;font-size:clamp(34px,4.4vw,64px);font-weight:500;letter-spacing:-.04em;line-height:1.05;color:#F0EDE8}
+.cr-title em{color:#C8A96E}
+.cr-block{margin:0;display:grid;gap:12px;width:min(100%,620px)}
+/* film-credit layout: role right of the gutter's left side, name left of its right side */
+.cr-row{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:baseline}
+.cr-row dt{text-align:right;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,237,232,.5)}
+.cr-row dd{margin:0;text-align:left;font-size:clamp(17px,1.5vw,21px);color:#F0EDE8;letter-spacing:-.01em}
+.cr-row dd em{color:#C8A96E;font-size:1.15em}
+.cr-head{margin:34px 0 4px;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:#C8A96E}
+.cr-films{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-family:var(--serif);font-style:italic;font-size:clamp(24px,2.4vw,34px);line-height:1.15;color:#F0EDE8}
+.cr-fine{max-width:440px;margin:40px 0 0;font-size:12.5px;line-height:1.7;color:rgba(240,237,232,.45)}
+.cr-final{position:absolute;inset:0;z-index:3;display:grid;place-content:center;justify-items:center;gap:10px;text-align:center;opacity:0}
+.cr-logo{width:42px;height:42px;color:#C8A96E;margin-bottom:10px}
+.cr-end{margin:0;font-size:clamp(46px,6vw,92px);line-height:1}
+.cr-end em{color:#F0EDE8}
+.cr-thanks{margin:6px 0 0;font-size:clamp(15px,1.3vw,18px);color:rgba(240,237,232,.7)}
+.cr-run{margin:14px 0 0;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(240,237,232,.45)}
+.cr-run b{font-weight:400;color:#C8A96E}
+@media (max-width:760px){.cr-frame{aspect-ratio:auto;height:74svh}.cr-row{gap:16px}}
+/* without motion: the credits simply sit there, readable */
+.no-roll .cr-screen{height:auto;padding:60px var(--pad)}
+.no-roll .cr-frame{aspect-ratio:auto;height:auto;padding:60px 0}
+.no-roll .cr-frame::after{display:none}
+.no-roll .cr-roll{position:static}
+.no-roll .cr-final{position:static;opacity:1;margin-top:60px}
+.no-roll .cr-frame::before{animation:none}
+
+/* v21 — links into the behind-the-frame pages */
+.dr-btf{display:inline-flex;align-items:center;gap:7px;margin-top:10px;min-height:32px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);transition:gap .4s var(--ease)}
+.dr-btf svg{width:12px;height:12px}
+.dr-btf:hover{gap:11px}
+.fp-btf{margin-left:22px;font-size:14px;color:var(--gold)}
+@media (max-width:700px){.dr-btf{min-height:44px}.fp-btf{margin:18px 0 0;display:inline-flex}}
+
+/* =========================================================
+   v23 — section cut: the frame closes to a letterbox, cuts, reopens
+   ========================================================= */
+.cut{position:fixed;inset:0;z-index:95;pointer-events:none;visibility:hidden;--strip:clamp(150px,24vh,230px)}
+.cut.on{visibility:visible;pointer-events:auto}
+.cut-veil{position:absolute;inset:0;background:rgba(8,8,7,0)}
+.cut-matte{position:absolute;left:0;right:0;height:calc(50% - var(--strip) / 2);background:#070706;transform:scaleY(0);will-change:transform}
+.cut-t{top:0;transform-origin:50% 0}
+.cut-b{bottom:0;transform-origin:50% 100%}
+.cut-matte::after{content:"";position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,169,110,.55) 20%,rgba(200,169,110,.55) 80%,transparent)}
+.cut-t::after{bottom:0}.cut-b::after{top:0}
+.cut-perf{position:absolute;left:0;right:0;height:8px;opacity:.5;
+  background:repeating-linear-gradient(90deg,rgba(240,237,232,.16) 0 10px,transparent 10px 26px)}
+.cut-t .cut-perf{bottom:14px}.cut-b .cut-perf{top:14px}
+.cut-card{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:grid;justify-items:center;gap:10px;text-align:center;color:#F0EDE8;opacity:0}
+.cut-k{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.2em;color:rgba(240,237,232,.6)}
+.cut-k b{font-weight:400;color:#C8A96E}
+.cut-k #cutTo{color:#C8A96E}
+.cut-dot{width:7px;height:7px;border-radius:50%;background:#E5484D;box-shadow:0 0 10px rgba(229,72,77,.7)}
+.cut-name{display:block;font-size:clamp(44px,6.4vw,96px);font-weight:500;letter-spacing:-.05em;line-height:1;overflow:hidden;padding-bottom:.08em}
+.cut-name .cw{display:inline-block}
+.cut-tc{font-size:11px;letter-spacing:.16em;color:rgba(240,237,232,.45)}
+@media (max-width:640px){.cut{--strip:150px}}

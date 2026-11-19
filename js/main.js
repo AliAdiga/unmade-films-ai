@@ -7,6 +7,27 @@
   const motion = !!(G && ST) && !reduce;
   if (G && ST) G.registerPlugin(ST);
 
+  /* ---------- strings used by scripts ---------- */
+  const STR = {
+    'form.fix': 'A few fields need attention before the submission can go.',
+    'form.untitled': 'Untitled',
+    'form.sending': 'Sending your submission to the director…',
+    'form.sent': "Received. Your submission is on the director's desk; you'll hear back within two working days.",
+    'form.mailto': "Your email app should open with the submission filled in. If it didn't, write to dawood@unmadefilmsai.com.",
+    'room.night.fine': 'Night in the studio. Hover a room to bring the morning in.',
+    'room.night.touch': 'Night in the studio. Tap a room to bring the morning in.',
+    'room.morning': 'Morning in {r}.',
+    'stage.from': 'From the film {f}',
+    'flash.on': 'Flash on. Switch to the dark theme', 'flash.off': 'Flash off. Switch to the light theme',
+    'flash.state.on': 'On', 'flash.state.off': 'Off',
+    'btf.slate': '{t} · BEHIND THE FRAME'
+  };
+  const T = (k, v) => { let s = T0(k); if (v) for (const n in v) s = s.replace('{' + n + '}', v[n]); return s; };
+  const T0 = k => STR[k] || k;
+
+  // studio sound was removed; the calls stay as quiet no-ops
+  const sfx = { play() {}, set() {}, isOn: () => false };
+
   const reel = $('#reel');
   const nav = $('#nav');
   const pad2 = n => String(n).padStart(2, '0');
@@ -32,7 +53,7 @@
     if (id.length < 2) return;
     e.preventDefault();
     closeMenu();
-    if (id === '#brief') shutterTo(id); else scrollTo(id);
+    if (id === '#brief') shutterTo(id); else if (id === '#top') scrollTop(); else cutTo(id);
     if (id !== '#top') history.replaceState(null, '', id);
   }));
 
@@ -66,12 +87,79 @@
     shutter.classList.add('on'); drawIris(s.a, s.rot);
     G.timeline({ onComplete: () => { shutter.classList.remove('on'); shutterBusy = false; } })
       .to(s, { a: 0, rot: 60, duration: .62, ease: 'power3.in', onUpdate: () => drawIris(s.a, s.rot) })
+      .add(() => sfx.play('shutter'), '-=.06')
       .fromTo(shMark, { opacity: 0, scale: .86 }, { opacity: 1, scale: 1, duration: .45, ease: 'expo.out' }, '-=.12')
       .fromTo('.sh-logo', { rotation: -90 }, { rotation: 0, duration: .6, ease: 'back.out(2)' }, '<')
       .add(() => jumpTo(id))
       .to(shMark, { opacity: 0, scale: 1.06, duration: .3, ease: 'power2.in' }, '+=.42')
       .to(s, { a: open, rot: 140, duration: .8, ease: 'power3.out', onUpdate: () => drawIris(s.a, s.rot) }, '-=.08');
   }
+  /* ---------- section cut: the frame closes to a letterbox, cuts to the scene, reopens ---------- */
+  const cut = $('#cut'), cutName = $('#cutName'), cutFrom = $('#cutFrom'), cutToEl = $('#cutTo'), cutTc = $('#cutTc');
+  const cutVeil = $('.cut-veil', cut), cutMattes = $$('.cut-matte', cut), cutCard = $('.cut-card', cut);
+  const SCENES = [['studio', '01'], ['work', '02'], ['process', '03'], ['services', '04'], ['follow', '05'], ['brief', '06']];
+  const sceneNow = () => {
+    let no = '00';
+    SCENES.forEach(([id, n]) => { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top < innerHeight * .4) no = n; });
+    return no;
+  };
+  const sceneName = id => {
+    const r = $(`.nav a.l[href="${id}"] .l-roll`);
+    if (r) return (r.getAttribute('aria-label') || r.textContent).trim();
+    const h = $(`${id} h2`); return h ? h.textContent.trim().split(/[.,]/)[0] : id.slice(1);
+  };
+  let cutBusy = false;
+  function cutTo(id) {
+    const el = $(id); if (!el) return;
+    if (!G || reduce) { jumpTo(id); return; }
+    if (cutBusy || shutterBusy) return; cutBusy = true;
+    const toNo = (SCENES.find(s => '#' + s[0] === id) || [0, '--'])[1];
+    cutFrom.textContent = sceneNow(); cutToEl.textContent = toNo;
+    cutName.innerHTML = sceneName(id).split(' ').map(w => `<span class="cw">${w}</span>`).join(' ');
+    const words = $$('.cw', cutName);
+    const y0 = window.scrollY, y1 = el.getBoundingClientRect().top + y0 - 70, dir = y1 >= y0 ? 1 : -1;
+    const clock = { f: y0 / 40 };                                 // the page read as footage: 40px a frame
+    const showTc = () => { cutTc.textContent = tc(clock.f / 24); };
+    cut.classList.add('on'); showTc();
+    G.timeline({ onComplete: () => { cut.classList.remove('on'); cutBusy = false; } })
+      .fromTo(cutVeil, { backgroundColor: 'rgba(8,8,7,0)', backdropFilter: 'blur(0px)' }, { backgroundColor: 'rgba(8,8,7,.42)', backdropFilter: 'blur(9px)', duration: .45, ease: 'power2.out' }, 0)
+      .fromTo(cutMattes, { scaleY: 0 }, { scaleY: 1, duration: .5, ease: 'power3.inOut' }, 0)
+      .fromTo(cutCard, { opacity: 0 }, { opacity: 1, duration: .25 }, .22)
+      .fromTo(words, { yPercent: 105 * dir }, { yPercent: 0, duration: .5, ease: 'expo.out', stagger: .05 }, .26)
+      .to(clock, { f: y1 / 40, duration: .7, ease: 'power2.inOut', onUpdate: showTc }, .2)
+      .add(() => { jumpTo(id); }, .62)
+      .to(words, { yPercent: -105 * dir, duration: .38, ease: 'power3.in', stagger: .03 }, .98)
+      .to(cutCard, { opacity: 0, duration: .2 }, 1.18)
+      .to(cutMattes, { scaleY: 0, duration: .6, ease: 'power3.inOut' }, 1.1)
+      .to(cutVeil, { backgroundColor: 'rgba(8,8,7,0)', backdropFilter: 'blur(0px)', duration: .55, ease: 'power2.inOut' }, 1.14);
+  }
+
+  // into a film's "behind the frame" page: the shutter closes on the logo, then the page opens
+  function shutterOut(url, slate) {
+    const go = () => { if (url) location.href = url; else location.reload(); };
+    if (!G || reduce) { go(); return; }
+    if (shutterBusy) return; shutterBusy = true;
+    const open = Math.hypot(innerWidth, innerHeight) / 2 + 40, s = { a: open, rot: 0 };
+    const sl = $('.sh-slate', shutter), was = sl.textContent; sl.textContent = slate;
+    shutter.classList.add('on'); drawIris(s.a, s.rot);
+    G.timeline()
+      .to(s, { a: 0, rot: 60, duration: .6, ease: 'power3.in', onUpdate: () => drawIris(s.a, s.rot) })
+      .add(() => sfx.play('shutter'), '-=.06')
+      .fromTo(shMark, { opacity: 0, scale: .86 }, { opacity: 1, scale: 1, duration: .35, ease: 'expo.out' }, '-=.1')
+      .add(go, '+=.15');
+    // coming back with the browser's back button: reopen
+    addEventListener('pageshow', function back(ev) {
+      if (!ev.persisted) return; removeEventListener('pageshow', back);
+      shutter.classList.remove('on'); G.set(shMark, { opacity: 0 }); sl.textContent = was; shutterBusy = false;
+    });
+  }
+  $$('a.to-film').forEach(a => a.addEventListener('click', e => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault(); e.stopPropagation();
+    const title = (a.closest('.dr-slide') ? a.closest('.dr-slide').dataset.title : 'Empty Chair').toUpperCase();
+    shutterOut(a.getAttribute('href'), T('btf.slate', { t: title }));
+  }));
+
   $('#toTop').addEventListener('click', scrollTop);
 
   /* ---------- flash on / flash off: light and dark themes ---------- */
@@ -80,8 +168,8 @@
   const syncFlash = () => {
     const on = isLight();
     flashBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    flashBtn.setAttribute('aria-label', on ? 'Flash on. Switch to the dark theme' : 'Flash off. Switch to the light theme');
-    flashState.textContent = on ? 'On' : 'Off';
+    flashBtn.setAttribute('aria-label', T(on ? 'flash.on' : 'flash.off'));
+    flashState.textContent = T(on ? 'flash.state.on' : 'flash.state.off');
     document.querySelector('meta[name="theme-color"]').setAttribute('content', on ? '#F1ECE3' : '#0A0A0A');
   };
   const applyTheme = light => {
@@ -120,9 +208,9 @@
     };
     if (toLight) {
       // the flash charges, then fires: the light spreads from it
-      flashBtn.classList.add('charging');
-      setTimeout(() => { flashBtn.classList.remove('charging'); go(); }, 300);
-    } else go();
+      flashBtn.classList.add('charging'); sfx.play('charge');
+      setTimeout(() => { flashBtn.classList.remove('charging'); sfx.play('pop'); go(); }, 300);
+    } else { sfx.play('tick'); go(); }
   });
 
   /* ---------- split helpers ---------- */
@@ -151,7 +239,7 @@
       if (n.nodeType === 3) {
         const frag = document.createDocumentFragment();
         [...n.textContent].forEach(ch => {
-          if (ch === ' ') { frag.appendChild(document.createTextNode(' ')); return; }
+          if (/^\s+$/.test(ch)) { frag.appendChild(document.createTextNode(' ')); return; }
           const s = document.createElement('span'); s.className = 'ch'; s.textContent = ch; out.push(s); frag.appendChild(s);
         });
         n.replaceWith(frag);
@@ -203,13 +291,14 @@
 
   /* ---------- keep the nav clear of the lens at every width ---------- */
   const fitNav = () => {
-    nav.classList.remove('fit-1', 'fit-2');
+    nav.classList.remove('fit-1', 'fit-2', 'fit-3');
     if (innerWidth <= 900) return;                        // phones use the menu
     const mid = nav.clientWidth / 2, clear = 67 + 22;     // lens radius + breathing room
     const end = $('.nav-end'), left = $('.nav-left');
     const collides = () => end.getBoundingClientRect().left < mid + clear || left.getBoundingClientRect().right > mid - clear;
     if (collides()) nav.classList.add('fit-1');
     if (collides()) nav.classList.add('fit-2');
+    if (collides()) nav.classList.add('fit-3');
   };
   fitNav();
   addEventListener('resize', fitNav);
@@ -351,6 +440,60 @@
       onLeave: () => reel.pause(), onEnterBack: () => { if (!toggle.classList.contains('paused')) reel.play().catch(() => {}); } });
   }
 
+  /* ---------- hero: rack focus (the sharp spot follows your eye) ---------- */
+  const heroFrame = $('#heroFrame'), rack = $('#rack'), af = $('#af'), afLbl = $('#afLbl');
+  const fp = { x: .5, y: .46, tx: .5, ty: .46 };
+  let fpRaf = null, afLock = null;
+  const sizeRack = () => rack.style.setProperty('--rr', Math.round(heroFrame.clientWidth * .26) + 'px');
+  const stepFocus = () => {
+    fp.x += (fp.tx - fp.x) * .14; fp.y += (fp.ty - fp.y) * .14;
+    rack.style.setProperty('--mx', (fp.x * 100).toFixed(2) + '%');
+    rack.style.setProperty('--my', (fp.y * 100).toFixed(2) + '%');
+    af.style.transform = `translate(${(fp.x * heroFrame.clientWidth).toFixed(1)}px,${(fp.y * heroFrame.clientHeight).toFixed(1)}px)`;
+    afLbl.textContent = 'AF · ' + (0.8 + (1 - fp.y) * 5.6).toFixed(1) + ' m';
+    fpRaf = Math.abs(fp.tx - fp.x) + Math.abs(fp.ty - fp.y) > .0015 ? requestAnimationFrame(stepFocus) : null;
+  };
+  const aimFocus = (e, touch) => {
+    const r = heroFrame.getBoundingClientRect();
+    fp.tx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
+    fp.ty = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+    heroFrame.classList.add('focusing'); af.classList.remove('locked');
+    clearTimeout(afLock); afLock = setTimeout(() => af.classList.add('locked'), touch ? 380 : 260);   // focus confirmed
+    if (!fpRaf) fpRaf = requestAnimationFrame(stepFocus);
+  };
+  if (!reduce) {
+    sizeRack(); addEventListener('resize', sizeRack); stepFocus();
+    heroFrame.addEventListener('pointermove', e => { if (e.pointerType === 'mouse') aimFocus(e); });
+    heroFrame.addEventListener('pointerleave', e => {
+      if (e.pointerType !== 'mouse') return;
+      heroFrame.classList.remove('focusing'); fp.tx = .5; fp.ty = .46; if (!fpRaf) fpRaf = requestAnimationFrame(stepFocus);
+    });
+    heroFrame.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse' || e.target.closest('button')) return;
+      aimFocus(e, true);
+      setTimeout(() => heroFrame.classList.remove('focusing'), 1800);
+    });
+  }
+
+  /* ---------- hero: format monitor (delivery-format guides) ---------- */
+  const guide = $('#guide'), gLbl = $('#gLbl'), fmtBtns = $$('.fmt-mon button');
+  const FMTS = { '2.39': [2.39, '2.39:1 · CINEMA'], '16:9': [16 / 9, '16:9 · BROADCAST · YOUTUBE'], '9:16': [9 / 16, '9:16 · REELS · STORIES'], '4:5': [4 / 5, '4:5 · FEED'] };
+  let fmtNow = '2.39';
+  const placeGuide = () => {
+    const w = heroFrame.clientWidth, h = heroFrame.clientHeight, a = FMTS[fmtNow][0];
+    let gw = w, gh = w / a;
+    if (gh > h) { gh = h - 8; gw = gh * a; }
+    guide.style.width = gw + 'px'; guide.style.height = gh + 'px';
+    guide.classList.toggle('on', fmtNow !== '2.39');
+    gLbl.textContent = FMTS[fmtNow][1];
+  };
+  fmtBtns.forEach(b => b.addEventListener('click', () => {
+    fmtNow = b.dataset.fmt;
+    fmtBtns.forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    placeGuide();
+  }));
+  addEventListener('resize', placeGuide); placeGuide();
+
   /* ---------- nav ---------- */
   const prog = $('#progress');
   let lastY = 0;
@@ -396,7 +539,7 @@
     G.timeline()
       .to(stick, { rotation: -16, duration: .35, ease: 'back.out(2)' })
       .to(stick, { rotation: 0, duration: .16, ease: 'power4.in' }, '+=.25')
-      .add(() => { takeEl.textContent = pad2(take); })
+      .add(() => { takeEl.textContent = pad2(take); sfx.play('clap'); })
       .fromTo(slate, { x: -4, rotation: -1.1 }, { x: 0, rotation: -1.5, duration: .5, ease: 'elastic.out(1.2,.3)', immediateRender: false })
       // a quick glint on the slate only, never over the page
       .fromTo('.slate-body', { boxShadow: '0 0 0 1px rgba(200,169,110,.7), 0 0 40px rgba(200,169,110,.25)' }, { boxShadow: '0 0 0 0px rgba(200,169,110,0), 0 0 0px rgba(200,169,110,0)', duration: .6, ease: 'power2.out', immediateRender: false }, '<');
@@ -438,6 +581,22 @@
       .from('.script p', { opacity: 0, duration: .5, stagger: .09, ease: 'none' }, .55)
       .from('.tiles li', { y: 90, opacity: 0, rotation: i => [-14, 10, -8, 14][i], duration: 1.1, stagger: .08, ease: 'back.out(1.6)' }, .8);
     G.from('.sub', { y: 70, opacity: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: '.sub', start: 'top 85%' } });
+
+    // end credits roll with the scroll
+    // the screen holds while the credits roll through the frame, then the end card
+    const credits = $('#credits'), crFrame = $('#crFrame'), crRoll = $('#crRoll'), crFinal = $('#crFinal'), crCue = $('#crCue'), crTc = $('#crTc');
+    const crDist = () => crFrame.offsetHeight + crRoll.offsetHeight;
+    G.timeline({ scrollTrigger: { trigger: credits, start: 'top top', end: () => '+=' + Math.round(crDist() * 1.25 + innerHeight * .5),
+        pin: true, scrub: .6, invalidateOnRefresh: true, onUpdate: st => { crTc.textContent = tc(st.progress * 96); } } })
+      .fromTo(crRoll, { y: () => crFrame.offsetHeight }, { y: () => -crRoll.offsetHeight, ease: 'none', duration: 1 }, 0)
+      // the reel-change cue: two flashes in the corner before the last reel ends
+      .to(crCue, { keyframes: [{ opacity: .9, duration: .012 }, { opacity: 0, duration: .02 }, { opacity: .9, duration: .012 }, { opacity: 0, duration: .02 }] }, .8)
+      .fromTo(crFinal, { opacity: 0, scale: .96 }, { opacity: 1, scale: 1, duration: .2, ease: 'power2.out' }, .96)
+      .add(() => {}, 1.2);
+    ST.create({ trigger: credits, start: 'top 60%', onEnter: () => { $('#crRun').textContent = $('#runTime').textContent; },
+      onUpdate: () => { $('#crRun').textContent = $('#runTime').textContent; } });
+  } else {
+    document.documentElement.classList.add('no-roll');
   }
 
   /* ---------- studio: night, and one room at a time in morning light ---------- */
@@ -454,7 +613,7 @@
     probe.onload = () => { days.forEach(d => { $('img', d).src = probe.src; }); house.classList.add('has-day'); };
     probe.src = house.dataset.day;
   }
-  const nightHint = () => fine ? 'Night in the studio. Hover a room to bring the morning in.' : 'Night in the studio. Tap a room to bring the morning in.';
+  const nightHint = () => T(fine ? 'room.night.fine' : 'room.night.touch');
   hintTxt.textContent = nightHint();
   let current = null, layer = 0, sticky = false;
   function lightOn(li) {
@@ -474,7 +633,7 @@
     $('#rpTime').textContent = li.dataset.time;
     $('#rpNo').textContent = `ROOM ${pad2(i + 1)} / 07`;
     hintIcon.setAttribute('href', '#i-sun');
-    hintTxt.textContent = `Morning in ${$('b', li).textContent}.`;
+    hintTxt.textContent = T('room.morning', { r: $('b', li).textContent });
   }
   function lightOff() {
     if (sticky || !current) return;
@@ -518,7 +677,7 @@
   const setStep = k => {
     steps.forEach((s, i) => s.classList.toggle('on', i === k));
     imgs.forEach((m, i) => m.classList.toggle('on', i === k));
-    cap.textContent = 'From the film ' + steps[k].dataset.cap;
+    cap.textContent = T('stage.from', { f: steps[k].dataset.cap });
     no.textContent = `STEP ${pad2(k + 1)} / 06`;
     line.style.transform = `scaleX(${(k + 1) / steps.length})`;
   };
@@ -537,17 +696,43 @@
   const tlItems = $$('.tl-item', tlList), idxItems = $$('button', idxEl), tlFill = $('#tlFill');
   const drPrev = $('#drPrev'), drNext = $('#drNext');
   let active = -1, pinST = null, step = 0, sw = 0;
+
+  // living thumbnails: the film in the gate runs (slow push, flicker, timecode);
+  // a slide with data-preview="media/clip.mp4" plays that clip on hover instead
+  slides.forEach(s => {
+    const pic = $('.dr-pic', s);
+    const t = document.createElement('span'); t.className = 'dr-tc'; t.setAttribute('aria-hidden', 'true'); t.innerHTML = '<i></i><b>00:00:00:00</b>';
+    pic.appendChild(t);
+    if (s.dataset.preview) {
+      const v = document.createElement('video');
+      Object.assign(v, { muted: true, loop: true, playsInline: true, preload: 'none', className: 'dr-prev' });
+      v.src = s.dataset.preview; pic.appendChild(v);
+      const media = $('.dr-media', s);
+      media.addEventListener('mouseenter', () => { if (s.classList.contains('on')) { pic.classList.add('previewing'); v.play().catch(() => {}); } });
+      media.addEventListener('mouseleave', () => { pic.classList.remove('previewing'); v.pause(); });
+    }
+  });
+  let liveTimer = null;
+  function goLive(k) {
+    if (reduce) return;
+    slides.forEach((s, i) => $('.dr-pic', s).classList.toggle('live', i === k));
+    clearInterval(liveTimer);
+    const out = $('.dr-tc b', slides[k]), t0 = performance.now();
+    liveTimer = setInterval(() => { out.textContent = tc((performance.now() - t0) / 1000); }, 1000 / 24);
+  }
   const reelProxy = { p: 0 };
 
   function setActive(k) {
     k = Math.max(0, Math.min(NF - 1, k));
     if (k === active) return;
+    if (active >= 0) sfx.play('tick');
     active = k;
     slides.forEach((s, i) => s.classList.toggle('on', i === k));
     tlItems.forEach((b, i) => { b.classList.toggle('on', i === k); b.setAttribute('aria-current', i === k ? 'true' : 'false'); });
     idxItems.forEach((b, i) => b.classList.toggle('on', i === k));
     $('#drNow').textContent = pad2(k + 1);
     drPrev.disabled = k === 0; drNext.disabled = k === NF - 1;
+    goLive(k);
     const it = tlItems[k]; tlFill.style.height = Math.max(0, it.parentElement.offsetTop + 21 - 16) + 'px';
     if (idxItems[k] && idxEl.scrollWidth > idxEl.clientWidth) idxItems[k].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   }
@@ -722,17 +907,38 @@
   ['name', 'email', 'what'].forEach(n => form.elements[n].addEventListener('input', () => {
     if (form.elements[n].closest('.sf').classList.contains('invalid')) validate();
   }));
-  form.addEventListener('submit', e => {
+  const submitBtn = $('button[type=submit]', form);
+  let sending = false;
+  const stampIt = after => {
+    if (G && !reduce) G.fromTo(stamp, { opacity: 0, scale: 2.2, rotation: -24 }, { opacity: .95, scale: 1, rotation: -14, duration: .45, ease: 'power4.in', onComplete: () => { G.fromTo(form, { x: -3 }, { x: 0, duration: .4, ease: 'elastic.out(1.2,.3)' }); if (after) setTimeout(after, 450); } });
+    else { stamp.style.opacity = .95; stamp.style.transform = 'rotate(-14deg)'; if (after) after(); }
+  };
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    if (!validate()) { note.textContent = 'A few fields need attention before the submission can go.'; note.classList.add('on'); $('.invalid input, .invalid textarea', form).focus(); return; }
+    if (sending) return;
+    if (!validate()) { note.textContent = T('form.fix'); note.classList.add('on'); $('.invalid input, .invalid textarea', form).focus(); return; }
     const f = form.elements;
-    const title = f.title.value.trim() || 'Untitled';
-    const body = `PROJECT SUBMISSION No. ${$('#subNo').textContent}\n\nWorking title: ${title}\nName: ${f.name.value}\nEmail: ${f.email.value}\nCompany: ${f.company.value}\nNeeded by: ${form.querySelector('[name=timing]:checked').value}\n\nLogline:\n${f.what.value}`;
-    const send = () => { location.href = 'mailto:dawood@unmadefilmsai.com?subject=' + encodeURIComponent(`Project submission: ${title} (${f.name.value})`) + '&body=' + encodeURIComponent(body); };
-    note.textContent = "Received. Your email app should open with the submission filled in. If it didn't, write to dawood@unmadefilmsai.com.";
-    note.classList.add('on');
-    if (G && !reduce) G.fromTo(stamp, { opacity: 0, scale: 2.2, rotation: -24 }, { opacity: .95, scale: 1, rotation: -14, duration: .45, ease: 'power4.in', onComplete: () => { G.fromTo(form, { x: -3 }, { x: 0, duration: .4, ease: 'elastic.out(1.2,.3)' }); setTimeout(send, 450); } });
-    else { stamp.style.opacity = .95; stamp.style.transform = 'rotate(-14deg)'; send(); }
+    const data = {
+      no: $('#subNo').textContent, title: f.title.value.trim() || T('form.untitled'), name: f.name.value.trim(), email: f.email.value.trim(),
+      company: f.company.value.trim(), timing: form.querySelector('[name=timing]:checked').value, what: f.what.value.trim(), website: f.website ? f.website.value : ''
+    };
+    sending = true; submitBtn.disabled = true; note.textContent = T('form.sending'); note.classList.add('on');
+    let delivered = false;
+    try {
+      const r = await fetch('/api/brief', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      delivered = r.ok && (await r.json().catch(() => ({}))).ok === true;
+    } catch (_) { delivered = false; }
+    sending = false; submitBtn.disabled = false;
+    if (delivered) {
+      note.textContent = T('form.sent');
+      stampIt();
+      form.reset(); sig.textContent = ' ';
+      return;
+    }
+    // the sender is not switched on (or failed): fall back to the visitor's email app
+    const body = `PROJECT SUBMISSION No. ${data.no}\n\nWorking title: ${data.title}\nName: ${data.name}\nEmail: ${data.email}\nCompany: ${data.company}\nNeeded by: ${data.timing}\n\nLogline:\n${data.what}`;
+    note.textContent = T('form.mailto');
+    stampIt(() => { location.href = 'mailto:dawood@unmadefilmsai.com?subject=' + encodeURIComponent(`Project submission: ${data.title} (${data.name})`) + '&body=' + encodeURIComponent(body); });
   });
 
   /* ---------- running time on the page ---------- */

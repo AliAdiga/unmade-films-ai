@@ -12,13 +12,13 @@
 <meta property="og:image" content="media/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0A0A'/%3E%3Cpath d='M12 24V12h12M40 12h12v12M52 40v12H40M24 52H12V40' fill='none' stroke='%23C8A96E' stroke-width='3.2'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23F0EDE8'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff2" href="fonts/geist-300-normal-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/instrument-serif-400-italic-latin.woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="preload" as="image" href="media/reel-poster.webp">
 <link rel="preload" as="image" href="media/lens.webp">
 <script>try{if(localStorage.getItem("uf-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}</script>
-<link rel="stylesheet" href="css/style.css?v=25">
+<link rel="stylesheet" href="css/style.css?v=31">
 <noscript><style>.loader{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Unmade Films AI","url":"https://www.unmadefilmsai.com/","email":"dawood@unmadefilmsai.com","address":{"@type":"PostalAddress","addressLocality":"Amman","addressCountry":"JO"},"founder":{"@type":"Person","name":"Dawood Botai","jobTitle":"Director and cinematographer"},"sameAs":["https://www.instagram.com/unmadefilmsai","https://www.youtube.com/@dawoodbotai","https://www.linkedin.com/company/unmade-films-ai/"]}
@@ -56,6 +56,17 @@
 </div>
 
 <!-- camera shutter: used to cut straight to the brief -->
+<!-- section cut: anamorphic mattes close, a scene card, the cut, the mattes open -->
+<div class="cut" id="cut" aria-hidden="true">
+  <div class="cut-veil"></div>
+  <div class="cut-matte cut-t"><span class="cut-perf"></span></div>
+  <div class="cut-matte cut-b"><span class="cut-perf"></span></div>
+  <div class="cut-card">
+    <span class="tc cut-k"><i class="cut-dot"></i><span id="cutFrom">00</span><b>→</b><span id="cutTo">03</span></span>
+    <strong class="cut-name" id="cutName">Process</strong>
+    <span class="tc cut-tc" id="cutTc">00:00:00:00</span>
+  </div>
+</div>
 <div class="shutter" id="shutter" aria-hidden="true">
   <svg class="sh-svg" id="shSvg"><path class="sh-iris" id="shIris" fill-rule="evenodd"/><path class="sh-blades" id="shBlades"/></svg>
   <div class="sh-mark" id="shMark">
@@ -173,12 +184,25 @@
         <img class="poster" src="media/reel-poster.webp" alt="">
         <video id="reel" muted loop playsinline preload="auto" poster="media/reel-poster.webp" aria-label="A loop of moments from recent films">
           <source src="media/reel.webm" type="video/webm">
-          <source src="media/reel.mp4" type="video/mp4">
+          <source src="media/reel-v2.mp4" type="video/mp4">
         </video>
         <div class="vf hero-vf" aria-hidden="true"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i><b></b></div>
+        <div class="rack" id="rack" aria-hidden="true"></div>
+        <div class="guide" id="guide" aria-hidden="true"><i class="g-safe"></i><span class="g-lbl" id="gLbl"></span></div>
+        <div class="af" id="af" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="af-lbl" id="afLbl">AF · 2.4 m</span></div>
         <button class="reel-toggle" id="reelToggle" aria-label="Pause the reel"><span class="pz"></span></button>
       </div>
-      <div class="hero-frame-cap" aria-hidden="true"><span>A001 · Showreel 2026</span><span>Amman 31.95°N 35.93°E</span></div>
+      <div class="hero-frame-cap">
+        <span aria-hidden="true">A001 · Showreel 2026</span>
+        <div class="fmt-mon" role="group" aria-label="Frame guides for delivery formats">
+          <span class="fm-k" aria-hidden="true">Frame</span>
+          <button type="button" data-fmt="2.39" aria-pressed="true">2.39</button>
+          <button type="button" data-fmt="16:9" aria-pressed="false">16:9</button>
+          <button type="button" data-fmt="9:16" aria-pressed="false">9:16</button>
+          <button type="button" data-fmt="4:5" aria-pressed="false">4:5</button>
+        </div>
+        <span aria-hidden="true">Amman 31.95°N 35.93°E</span>
+      </div>
     </div>
     <div class="hero-copy wrap">
       <h1 id="h1">AI films, directed <br>by a <em>cinematographer.</em></h1>
@@ -282,6 +306,7 @@
         <p class="meta">Education campaign · 0:48</p>
         <p>Every dinar fills a seat. A campaign that keeps students in university, told through the seat they almost left empty.</p>
         <button class="btn btn-ghost" data-yt="XL-Dbws9J0c" data-title="Empty Chair" data-r="43"><svg><use href="#i-play"/></svg><span>Play the film</span></button>
+        <a class="link-arrow to-film fp-btf" href="film.html?f=empty-chair">Behind the frame <svg><use href="#i-arrow"/></svg></a>
       </div>
     </article>
 
@@ -307,7 +332,7 @@
                   <span class="dr-pic"><img src="media/p_trophy.webp" alt="A silver trophy under stadium lights" width="1600" height="900" loading="lazy"><span class="dr-shade"></span><span class="dr-watch"><svg><use href="#i-play"/></svg>Watch film</span></span>
                   <span class="edge edge-b"><span>▸ 01</span><span>SPORT · 0:47</span></span>
                 </button>
-                <div class="dr-cap"><span class="dr-no tc">01</span><div class="dr-txt"><h3>Trophy</h3><p>Desert craft, from the first pencil line to stadium light.</p></div><span class="dr-meta tc">Sport<br>0:47</span></div>
+                <div class="dr-cap"><span class="dr-no tc">01</span><div class="dr-txt"><h3>Trophy</h3><p>Desert craft, from the first pencil line to stadium light.</p><a class="dr-btf to-film" href="film.html?f=trophy">Behind the frame <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div><span class="dr-meta tc">Sport<br>0:47</span></div>
               </article>
               <article class="dr-slide" data-yt="h17MI-oDwzI" data-title="JO80" data-cat="Culture" data-dur="1:27" data-desc="Eighty years of independence, in the faces of Jordan.">
                 <button class="dr-media" aria-label="Watch JO80, 1:27">
@@ -315,7 +340,7 @@
                   <span class="dr-pic"><img src="media/p_jo80.webp" alt="A young officer in dress uniform" width="1280" height="720" loading="lazy"><span class="dr-shade"></span><span class="dr-watch"><svg><use href="#i-play"/></svg>Watch film</span></span>
                   <span class="edge edge-b"><span>▸ 02</span><span>CULTURE · 1:27</span></span>
                 </button>
-                <div class="dr-cap"><span class="dr-no tc">02</span><div class="dr-txt"><h3>JO80</h3><p>Eighty years of independence, in the faces of Jordan.</p></div><span class="dr-meta tc">Culture<br>1:27</span></div>
+                <div class="dr-cap"><span class="dr-no tc">02</span><div class="dr-txt"><h3>JO80</h3><p>Eighty years of independence, in the faces of Jordan.</p><a class="dr-btf to-film" href="film.html?f=jo80">Behind the frame <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div><span class="dr-meta tc">Culture<br>1:27</span></div>
               </article>
               <article class="dr-slide" data-yt="DMqowjpVrE8" data-title="Khamzat" data-cat="Sport" data-dur="0:14" data-desc="Borz. The fighter as the wolf, in an illustrated world.">
                 <button class="dr-media" aria-label="Watch Khamzat, 0:14">
@@ -323,7 +348,7 @@
                   <span class="dr-pic"><img src="media/p_khamzat.webp" alt="An illustrated fighter in a wolf cloak" width="1280" height="720" loading="lazy"><span class="dr-shade"></span><span class="dr-watch"><svg><use href="#i-play"/></svg>Watch film</span></span>
                   <span class="edge edge-b"><span>▸ 03</span><span>SPORT · 0:14</span></span>
                 </button>
-                <div class="dr-cap"><span class="dr-no tc">03</span><div class="dr-txt"><h3>Khamzat</h3><p>Borz. The fighter as the wolf, in an illustrated world.</p></div><span class="dr-meta tc">Sport<br>0:14</span></div>
+                <div class="dr-cap"><span class="dr-no tc">03</span><div class="dr-txt"><h3>Khamzat</h3><p>Borz. The fighter as the wolf, in an illustrated world.</p><a class="dr-btf to-film" href="film.html?f=khamzat">Behind the frame <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div><span class="dr-meta tc">Sport<br>0:14</span></div>
               </article>
               <article class="dr-slide" data-yt="hsQ3gnZZt9s" data-title="Khamrah Dukhan" data-cat="Fragrance" data-dur="0:30" data-desc="One bottle. Smoke, amber and stone.">
                 <button class="dr-media" aria-label="Watch Khamrah Dukhan, 0:30">
@@ -331,7 +356,7 @@
                   <span class="dr-pic"><img src="media/p_khamrah.webp" alt="A perfume bottle in smoke" width="1280" height="720" loading="lazy"><span class="dr-shade"></span><span class="dr-watch"><svg><use href="#i-play"/></svg>Watch film</span></span>
                   <span class="edge edge-b"><span>▸ 04</span><span>FRAGRANCE · 0:30</span></span>
                 </button>
-                <div class="dr-cap"><span class="dr-no tc">04</span><div class="dr-txt"><h3>Khamrah Dukhan</h3><p>One bottle. Smoke, amber and stone.</p></div><span class="dr-meta tc">Fragrance<br>0:30</span></div>
+                <div class="dr-cap"><span class="dr-no tc">04</span><div class="dr-txt"><h3>Khamrah Dukhan</h3><p>One bottle. Smoke, amber and stone.</p><a class="dr-btf to-film" href="film.html?f=khamrah-dukhan">Behind the frame <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div><span class="dr-meta tc">Fragrance<br>0:30</span></div>
               </article>
               <article class="dr-slide" data-yt="Y3uw2Iru2sk" data-title="ARD" data-cat="Food" data-dur="0:32" data-desc="From hand to hand. An olive oil film, grove to table.">
                 <button class="dr-media" aria-label="Watch ARD, 0:32">
@@ -339,7 +364,7 @@
                   <span class="dr-pic"><img src="media/p_ard.webp" alt="Olive trees in morning mist" width="1600" height="900" loading="lazy"><span class="dr-shade"></span><span class="dr-watch"><svg><use href="#i-play"/></svg>Watch film</span></span>
                   <span class="edge edge-b"><span>▸ 05</span><span>FOOD · 0:32</span></span>
                 </button>
-                <div class="dr-cap"><span class="dr-no tc">05</span><div class="dr-txt"><h3>ARD</h3><p>From hand to hand. An olive oil film, grove to table.</p></div><span class="dr-meta tc">Food<br>0:32</span></div>
+                <div class="dr-cap"><span class="dr-no tc">05</span><div class="dr-txt"><h3>ARD</h3><p>From hand to hand. An olive oil film, grove to table.</p><a class="dr-btf to-film" href="film.html?f=ard">Behind the frame <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div><span class="dr-meta tc">Food<br>0:32</span></div>
               </article>
               <article class="dr-slide" data-yt="5veRChUHfp8" data-title="Fear" data-cat="Short film" data-dur="0:30" data-desc="One lit window in a dark city, and the person inside it.">
                 <button class="dr-media" aria-label="Watch Fear, 0:30">
@@ -347,7 +372,7 @@
                   <span class="dr-pic"><img src="media/p_fear.webp" alt="A woman alone in a lit apartment window" width="1600" height="900" loading="lazy"><span class="dr-shade"></span><span class="dr-watch"><svg><use href="#i-play"/></svg>Watch film</span></span>
                   <span class="edge edge-b"><span>▸ 06</span><span>SHORT FILM · 0:30</span></span>
                 </button>
-                <div class="dr-cap"><span class="dr-no tc">06</span><div class="dr-txt"><h3>Fear</h3><p>One lit window in a dark city, and the person inside it.</p></div><span class="dr-meta tc">Short film<br>0:30</span></div>
+                <div class="dr-cap"><span class="dr-no tc">06</span><div class="dr-txt"><h3>Fear</h3><p>One lit window in a dark city, and the person inside it.</p><a class="dr-btf to-film" href="film.html?f=fear">Behind the frame <svg aria-hidden="true"><use href="#i-arrow"/></svg></a></div><span class="dr-meta tc">Short film<br>0:30</span></div>
               </article>
             </div>
           </div>
@@ -432,6 +457,7 @@
           <div><span class="sub-k">Date</span><span class="tc" id="subDate">--.--.--</span></div>
         </div>
 
+        <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="sub-row">
           <div class="sf sf-wide"><label for="f-title"><span class="sn">01</span>Working title <i>optional</i></label><input id="f-title" name="title" placeholder="Untitled olive oil film"></div>
         </div>
@@ -505,6 +531,32 @@
         <li><a class="tile" href="https://www.linkedin.com/company/unmade-films-ai/" target="_blank" rel="noopener"><span class="t-code">UF·04</span><span class="t-win"><svg><use href="#i-li"/></svg></span><span class="t-lbl">LinkedIn</span></a></li>
       </ul>
     </div>
+    <!-- END CREDITS: they roll as you scroll -->
+    <div class="credits" id="credits" aria-label="End credits">
+      <div class="cr-screen">
+        <div class="cr-frame" id="crFrame">
+          <span class="cr-tc tc" aria-hidden="true">REEL 7 · <span id="crTc">00:00:00:00</span></span>
+          <span class="cr-cue" id="crCue" aria-hidden="true"></span>
+          <div class="cr-roll" id="crRoll">
+            <p class="cr-presents tc">Unmade Films AI presents</p>
+            <p class="cr-title">The work of <em>the eye.</em></p>
+            <dl class="cr-block"><div class="cr-row"><dt>Directed by</dt><dd>Dawood Botai</dd></div><div class="cr-row"><dt>Director of photography</dt><dd>Dawood Botai</dd></div><div class="cr-row"><dt>Produced at</dt><dd>Unmade Films AI, Amman</dd></div></dl>
+            <p class="cr-head tc">The seven rooms</p>
+            <dl class="cr-block"><div class="cr-row"><dt>Room 01</dt><dd>Director</dd></div><div class="cr-row"><dt>Room 02</dt><dd>Production</dd></div><div class="cr-row"><dt>Room 03</dt><dd>Post and delivery</dd></div><div class="cr-row"><dt>Room 04</dt><dd>Marketing</dd></div><div class="cr-row"><dt>Room 05</dt><dd>Business development</dd></div><div class="cr-row"><dt>Room 06</dt><dd>Finance</dd></div><div class="cr-row"><dt>Room 07</dt><dd>Agency</dd></div></dl>
+            <p class="cr-head tc">Selected films</p>
+            <ul class="cr-films"><li>Empty Chair</li><li>Trophy</li><li>JO80</li><li>Khamzat</li><li>Khamrah Dukhan</li><li>ARD</li><li>Fear</li></ul>
+            <dl class="cr-block"><div class="cr-row"><dt>Camera</dt><dd><em>the eye</em></dd></div><div class="cr-row"><dt>Crew</dt><dd>the models</dd></div><div class="cr-row"><dt>Shot in</dt><dd>Amman, Jordan</dd></div></dl>
+            <p class="cr-fine">No sets were built and no shoot was booked for these films. Every frame was lit, framed and cut by hand.</p>
+          </div>
+          <div class="cr-final" id="crFinal">
+            <svg class="cr-logo" aria-hidden="true"><use href="#uf"/></svg>
+            <p class="cr-end"><em>The end.</em></p>
+            <p class="cr-thanks">Thank you for watching.</p>
+            <p class="cr-run tc">Your running time <b id="crRun">00:00</b></p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="wrap closing-fine">
       <span>© 2026 Unmade Films AI. Amman, Jordan.</span>
       <span><em>the tool changed. the eye didn't.</em></span>
@@ -531,9 +583,9 @@
   </div>
 </dialog>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
-<script src="js/main.js?v=18" defer></script>
+<script src="js/vendor/gsap.min.js" defer></script>
+<script src="js/vendor/ScrollTrigger.min.js" defer></script>
+<script src="js/vendor/lenis.min.js" defer></script>
+<script src="js/main.js?v=24" defer></script>
 </body>
 </html>
