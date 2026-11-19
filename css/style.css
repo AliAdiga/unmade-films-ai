@@ -352,7 +352,7 @@ main>section{isolation:isolate}
 .progress{position:absolute;left:0;right:0;bottom:-1px;height:1px}
 .burger{display:none;width:44px;height:44px;position:relative}
 @media (max-width:1240px){.nav-social{display:none}}
-@media (max-width:1060px){.nav-left .l:nth-child(3),.nav-right{display:none}}
+@media (max-width:1060px){.nav-left a.l:nth-of-type(3),.nav-right{display:none}}
 @media (max-width:900px){
   .nav-left,.nav .btn-gold{display:none}
   .burger{display:block}
@@ -703,3 +703,49 @@ h2{font-size:clamp(38px,4.6vw,80px)}
 .nav.solid .lens{transform:scale(.4)}
 .nav.solid .lens::before{box-shadow:none}
 @media (max-width:900px){.nav.solid .lens{transform:scale(.6)}}
+
+/* =========================================================
+   v8 — nav: scene numbers, letter roll, gliding focus brackets
+   ========================================================= */
+.nav-side{position:relative;gap:6px}
+.nav-side .l{display:inline-flex;align-items:baseline;gap:8px;padding:9px 12px;font-size:12.5px;letter-spacing:.14em;color:#B5B0A8;transition:color .4s var(--ease)}
+.nav-side .l::after{display:none}
+.l-no{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--gold);opacity:.45;transform:translateY(-1px);transition:opacity .4s,transform .5s var(--spring)}
+.l-roll{display:inline-flex;overflow:hidden;height:1.25em;line-height:1.25em}
+.l-roll .ch{display:inline-block;white-space:pre;text-shadow:0 1.25em 0 var(--gold);transition:transform .55s var(--ease) calc(var(--i) * 22ms)}
+.nav-side .l:hover .l-roll .ch,.nav-side .l:focus-visible .l-roll .ch,.nav-cta:hover .l-roll .ch,.nav-cta:focus-visible .l-roll .ch{transform:translateY(-1.25em)}
+.nav-side .l:hover .l-no,.nav-side .l.active .l-no{opacity:1;transform:translateY(-3px)}
+.nav-side .l.active{color:var(--warm)}
+.nav-side .l:focus-visible{outline:none}
+
+/* viewfinder corners that glide to the hovered (or current) link */
+.nav-focus{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;opacity:0;transition:transform .55s var(--ease),width .55s var(--ease),height .55s var(--ease),opacity .35s}
+.nav-focus.on{opacity:1}
+.nav-focus i{position:absolute;width:7px;height:7px;border:0 solid var(--gold)}
+.nav-focus i:nth-child(1){left:0;top:0;border-left-width:1px;border-top-width:1px}
+.nav-focus i:nth-child(2){right:0;top:0;border-right-width:1px;border-top-width:1px}
+.nav-focus i:nth-child(3){left:0;bottom:0;border-left-width:1px;border-bottom-width:1px}
+.nav-focus i:nth-child(4){right:0;bottom:0;border-right-width:1px;border-bottom-width:1px}
+.nav-focus.hovering i{border-color:var(--warm)}
+
+/* social: small lens-like buttons with a label */
+.nav-social{gap:8px;padding-left:20px}
+.nav-social a{position:relative;width:34px;height:34px;border:1px solid rgba(240,237,232,.14);background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.06),transparent 60%);transition:color .35s,background .35s,border-color .35s,transform .5s var(--spring)}
+.nav-social a svg{width:16px;height:16px;transition:transform .5s var(--spring)}
+.nav-social a:hover,.nav-social a:focus-visible{color:var(--ink);background:var(--gold);border-color:var(--gold);transform:translateY(-2px)}
+.nav-social a:hover svg{transform:rotate(-10deg) scale(1.08)}
+.nav-social a::after{content:attr(data-tip);position:absolute;left:50%;top:calc(100% + 10px);transform:translate(-50%,-4px);font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--warm);background:#151412;border:1px solid var(--line);padding:4px 7px;border-radius:2px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .4s var(--ease)}
+.nav-social a:hover::after,.nav-social a:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+/* send a brief: REC light + rolling label */
+.nav-cta{gap:10px;padding:0 18px 0 16px;font-size:13px;letter-spacing:.02em}
+.nav-cta .l-roll .ch{text-shadow:0 1.25em 0 var(--ink)}
+.rec-dot{width:7px;height:7px;border-radius:50%;background:#C9372C;box-shadow:0 0 0 3px rgba(201,55,44,.18);animation:rec 1.6s ease-in-out infinite}
+@keyframes rec{50%{opacity:.35;box-shadow:0 0 0 6px rgba(201,55,44,0)}}
+@media (prefers-reduced-motion:reduce){.l-roll .ch{transition:none}.rec-dot{animation:none}}
+
+/* v9 — the lens badge is the photographed lens */
+.lens-img{display:block;width:100%;height:100%;border-radius:50%;will-change:transform;filter:drop-shadow(0 0 0 rgba(0,0,0,0));transition:filter .5s var(--ease)}
+.lens{transition:transform .7s var(--ease),filter .5s var(--ease)}
+.lens:hover .lens-img{filter:brightness(1.12) saturate(1.1)}
+.lens::before{inset:-4px;background:radial-gradient(circle,#141311 60%,#0b0b0a);border-color:rgba(200,169,110,.3)}

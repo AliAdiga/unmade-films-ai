@@ -73,23 +73,11 @@
     return out;
   }
 
-  /* ---------- lens badge: aperture iris + focus ring ---------- */
-  const lensEl = $('#badge'), iris = $('#lensIris'), blades = $('#lensBlades'), ringG = $('#lensRingG');
+  /* ---------- lens badge: the lens image turns like a focus ring ---------- */
+  const lensEl = $('#badge'), lensImg = $('#lensImg');
   const lens = { a: 30, rot: 0, ring: 0 };
   function drawLens() {
-    const R = 64, c = 100, a = Math.max(2, lens.a), r0 = lens.rot * Math.PI / 180;
-    const v = [...Array(6)].map((_, k) => { const t = r0 + k * Math.PI / 3; return [c + a * Math.cos(t), c + a * Math.sin(t)]; });
-    iris.setAttribute('d', `M${c + R} ${c}A${R} ${R} 0 1 0 ${c - R} ${c}A${R} ${R} 0 1 0 ${c + R} ${c}ZM${v.map(p => p[0].toFixed(2) + ' ' + p[1].toFixed(2)).join('L')}Z`);
-    let d = '';
-    for (let k = 0; k < 6; k++) {
-      const p = v[k], q = v[(k + 1) % 6];
-      const L = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1, ux = (q[0] - p[0]) / L, uy = (q[1] - p[1]) / L;
-      const fx = q[0] - c, fy = q[1] - c, B = fx * ux + fy * uy, C = fx * fx + fy * fy - R * R;
-      const t = -B + Math.sqrt(Math.max(0, B * B - C));
-      d += `M${q[0].toFixed(2)} ${q[1].toFixed(2)}L${(q[0] + ux * t).toFixed(2)} ${(q[1] + uy * t).toFixed(2)}`;
-    }
-    blades.setAttribute('d', d);
-    ringG.setAttribute('transform', `rotate(${lens.ring.toFixed(2)} 100 100)`);
+    if (lensImg) lensImg.style.transform = `rotate(${(lens.ring * .4).toFixed(2)}deg)`;
   }
   drawLens();
   let lensHover = false, lensLive = !motion;
@@ -103,6 +91,27 @@
   addEventListener('scroll', lensFromScroll, { passive: true });
   lensEl.addEventListener('mouseenter', () => { lensHover = true; if (G) G.to(lens, { a: 46, duration: .5, ease: 'power3.out', onUpdate: drawLens }); });
   lensEl.addEventListener('mouseleave', () => { lensHover = false; const p = Math.min(1, window.scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)); if (G) G.to(lens, { a: 30 - 14 * p, duration: .6, ease: 'power3.out', onUpdate: drawLens }); });
+
+  /* ---------- nav: letter roll + gliding focus brackets ---------- */
+  $$('.l-roll').forEach(el => {
+    const t = el.textContent; el.textContent = ''; el.setAttribute('aria-label', t);
+    [...t].forEach((ch, i) => { const s = document.createElement('span'); s.className = 'ch'; s.style.setProperty('--i', i); s.textContent = ch; s.setAttribute('aria-hidden', 'true'); el.appendChild(s); });
+  });
+  $$('.nav-side').forEach(side => {
+    const focus = $('.nav-focus', side), items = $$('.l', side);
+    const park = (a, hovering) => {
+      if (!a) { focus.classList.remove('on', 'hovering'); return; }
+      focus.style.transform = `translate(${a.offsetLeft}px,${a.offsetTop}px)`;
+      focus.style.width = a.offsetWidth + 'px'; focus.style.height = a.offsetHeight + 'px';
+      focus.classList.add('on'); focus.classList.toggle('hovering', !!hovering);
+    };
+    items.forEach(a => { a.addEventListener('mouseenter', () => park(a, true)); a.addEventListener('focus', () => park(a, true)); });
+    const rest = () => park(items.find(a => a.classList.contains('active')));
+    side.addEventListener('mouseleave', rest);
+    items.forEach(a => a.addEventListener('blur', rest));
+    const mo = new MutationObserver(() => { if (!side.matches(':hover')) rest(); });
+    items.forEach(a => mo.observe(a, { attributes: true, attributeFilter: ['class'] }));
+  });
 
   /* ---------- side rails: film strip + scene slate ---------- */
   const railL = $('.rail-l'), railPerf = $('#railPerf'), railCode = $('#railCode');
