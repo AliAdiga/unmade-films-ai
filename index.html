@@ -8,17 +8,13 @@
 <meta name="theme-color" content="#0A0A0A">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Unmade Films AI">
-<meta property="og:description" content="AI films, directed by a cinematographer. The tool changed. The eye didn't.">
+<meta property="og:description" content="AI films, directed by a cinematographer. the tool changed. the eye didn't.">
 <meta property="og:image" content="media/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230A0A0A'/%3E%3Cpath d='M12 24V12h12M40 12h12v12M52 40v12H40M24 52H12V40' fill='none' stroke='%23C8A96E' stroke-width='3.2'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23F0EDE8'/%3E%3C/svg%3E">
-<link rel="preload" as="font" type="font/woff2" href="fonts/geist-300-normal-latin.woff2" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="fonts/instrument-serif-400-italic-latin.woff2" crossorigin>
-<link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="preload" as="image" href="media/reel-poster.webp">
-<link rel="preload" as="image" href="media/lens.webp">
 <script>try{if(localStorage.getItem("uf-theme")==="light")document.documentElement.dataset.theme="light"}catch(e){}</script>
-<link rel="stylesheet" href="css/style.css?v=34">
+<link rel="stylesheet" href="css/style.css?v=35">
 <noscript><style>.loader{display:none}</style></noscript>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Unmade Films AI","url":"https://www.unmadefilmsai.com/","email":"dawood@unmadefilmsai.com","address":{"@type":"PostalAddress","addressLocality":"Amman","addressCountry":"JO"},"founder":{"@type":"Person","name":"Dawood Botai","jobTitle":"Director and cinematographer"},"sameAs":["https://www.instagram.com/unmadefilmsai","https://www.youtube.com/@dawoodbotai","https://www.linkedin.com/company/unmade-films-ai/"]}
@@ -48,7 +44,7 @@
   <div class="lv" id="lv"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i><b class="lv-dot" id="lvDot"></b><span class="lv-ring" id="lvRing"></span></div>
   <div class="launch-text" id="launchText">
     <p class="launch-kicker">AI film studio · Amman</p>
-    <p class="launch-word" id="launchWord">UNMADE FILMS <em>AI</em></p>
+    <p class="launch-word" id="launchWord">UNMADE FILMS AI</p>
     <p class="launch-tag" id="launchTag">the tool changed. the eye didn't.</p>
   </div>
   <div class="loader-meta" id="loaderMeta"><span>ROLL A001 · SCENE 01 · TAKE 01</span><span class="tc" id="loaderTc">00:00:00:00</span></div>
@@ -71,7 +67,7 @@
   <svg class="sh-svg" id="shSvg"><path class="sh-iris" id="shIris" fill-rule="evenodd"/><path class="sh-blades" id="shBlades"/></svg>
   <div class="sh-mark" id="shMark">
     <svg class="sh-logo"><use href="#uf"/></svg>
-    <p class="sh-word">UNMADE FILMS <em>AI</em></p>
+    <p class="sh-word">UNMADE FILMS AI</p>
     <span class="sh-slate tc">SCENE 06 · SUBMISSION</span>
   </div>
 </div>
@@ -97,8 +93,8 @@
       <a class="l" href="#process" data-sec="process"><span class="l-no">03</span><span class="l-roll">Process</span></a>
     </nav>
   </div>
-  <a class="lens" id="badge" href="#top" aria-label="Unmade Films AI, back to top">
-    <img class="lens-img" id="lensImg" src="media/lens.webp" width="480" height="480" alt="">
+  <a class="lens badge" id="badge" href="#top" aria-label="Unmade Films AI, back to top">
+    <svg class="badge-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M12 24V12h12M40 12h12v12M52 40v12H40M24 52H12V40" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
   </a>
   <div class="nav-end">
     <div class="nav-side nav-right">
@@ -273,17 +269,42 @@
       <div class="house-wrap">
         <div class="house" id="house">
           <div class="house-glow" aria-hidden="true"></div>
-          <img class="h-base" src="media/studio-rooms.webp" alt="Seven illustrated rooms of the studio arranged as a honeycomb at night" width="1600" height="1464" loading="lazy">
-          <div class="h-day" aria-hidden="true"><img src="media/studio-rooms.webp" alt="" width="1600" height="1464" loading="lazy"><span class="h-warm"></span><span class="h-beam"></span></div>
-          <div class="h-day" aria-hidden="true"><img src="media/studio-rooms.webp" alt="" width="1600" height="1464" loading="lazy"><span class="h-warm"></span><span class="h-beam"></span></div>
+          <button class="hx" type="button" data-i="0" style="--x:33.333%;--y:30%">
+            <img class="hx-n" src="media/rooms/room-director-night.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+            <img class="hx-d" src="media/rooms/room-director-day.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+          </button>
+          <button class="hx" type="button" data-i="1" style="--x:0%;--y:30%">
+            <img class="hx-n" src="media/rooms/room-production-night.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+            <img class="hx-d" src="media/rooms/room-production-day.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+          </button>
+          <button class="hx" type="button" data-i="2" style="--x:66.667%;--y:30%">
+            <img class="hx-n" src="media/rooms/room-post-night.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+            <img class="hx-d" src="media/rooms/room-post-day.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+          </button>
+          <button class="hx" type="button" data-i="3" style="--x:16.667%;--y:0%">
+            <img class="hx-n" src="media/rooms/room-marketing-night.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+            <img class="hx-d" src="media/rooms/room-marketing-day.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+          </button>
+          <button class="hx" type="button" data-i="4" style="--x:50%;--y:0%">
+            <img class="hx-n" src="media/rooms/room-bizdev-night.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+            <img class="hx-d" src="media/rooms/room-bizdev-day.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+          </button>
+          <button class="hx" type="button" data-i="5" style="--x:16.667%;--y:60%">
+            <img class="hx-n" src="media/rooms/room-finance-night.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+            <img class="hx-d" src="media/rooms/room-finance-day.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+          </button>
+          <button class="hx" type="button" data-i="6" style="--x:50%;--y:60%">
+            <img class="hx-n" src="media/rooms/room-agency-night.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+            <img class="hx-d" src="media/rooms/room-agency-day.webp" alt="" width="720" height="799" loading="lazy" decoding="async">
+          </button>
           <div class="room-pop" id="roomPop" role="status" aria-live="polite">
-            <span class="rp-top"><svg><use href="#i-sun"/></svg><span id="rpTime">09:00</span> · morning light</span>
+            <span class="rp-top"><svg><use href="#i-sun" id="rpIcon"/></svg><span id="rpTime">09:00</span> · <span id="rpLight">morning light</span></span>
             <strong id="rpName">Director</strong>
             <span class="rp-desc" id="rpDesc">briefs and every final call</span>
             <span class="rp-no tc" id="rpNo">ROOM 01 / 07</span>
           </div>
         </div>
-        <p class="house-hint" id="houseHint"><svg><use href="#i-moon"/></svg><span>Night in the studio. Hover a room to turn its lights on.</span></p>
+        <p class="house-hint" id="houseHint"><svg><use href="#i-moon"/></svg><span>Night in the studio. Click a room to bring the morning in.</span></p>
       </div>
     </div>
   </section>
@@ -413,11 +434,6 @@
           <img src="media/s_post.webp" alt="" loading="lazy" data-cap="ARD">
           <img src="media/s_deliver.webp" alt="" loading="lazy" data-cap="Khamrah Dukhan">
           </div>
-          <svg class="pr-fx" aria-hidden="true" width="0" height="0"><filter id="prWhip" x="-20%" y="0" width="140%" height="100%" color-interpolation-filters="sRGB"><feGaussianBlur id="prWhipBlur" stdDeviation="0 0"/></filter></svg>
-          <span class="pr-flash" id="prFlash"></span>
-          <span class="pr-perf pr-perf-l" id="prPerfL"></span><span class="pr-perf pr-perf-r" id="prPerfR"></span>
-          <span class="pr-fline" id="prFline"><i></i></span>
-          <span class="pr-scratch" id="prScratch"></span>
           <div class="vf"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
           <div class="pr-hud pr-hud-t tc"><span><i class="pr-rec"></i>REC</span><span id="prTc">00:00:00:00</span><span id="prPhase">PRE-PRODUCTION</span></div>
           <div class="pr-hud pr-hud-b tc"><span id="prStep">STEP 01 / 06</span><span id="prCap">From the film Trophy</span></div>
@@ -590,31 +606,6 @@
       </ul>
     </div>
     <!-- END CREDITS: they roll as you scroll -->
-    <div class="credits" id="credits" aria-label="End credits">
-      <div class="cr-screen">
-        <div class="cr-frame" id="crFrame">
-          <span class="cr-tc tc" aria-hidden="true">REEL 7 · <span id="crTc">00:00:00:00</span></span>
-          <span class="cr-cue" id="crCue" aria-hidden="true"></span>
-          <div class="cr-roll" id="crRoll">
-            <p class="cr-presents tc">Unmade Films AI presents</p>
-            <p class="cr-title">The work of <em>the eye.</em></p>
-            <dl class="cr-block"><div class="cr-row"><dt>Directed by</dt><dd>Dawood Botai</dd></div><div class="cr-row"><dt>Director of photography</dt><dd>Dawood Botai</dd></div><div class="cr-row"><dt>Produced at</dt><dd>Unmade Films AI, Amman</dd></div></dl>
-            <p class="cr-head tc">The seven rooms</p>
-            <dl class="cr-block"><div class="cr-row"><dt>Room 01</dt><dd>Director</dd></div><div class="cr-row"><dt>Room 02</dt><dd>Production</dd></div><div class="cr-row"><dt>Room 03</dt><dd>Post and delivery</dd></div><div class="cr-row"><dt>Room 04</dt><dd>Marketing</dd></div><div class="cr-row"><dt>Room 05</dt><dd>Business development</dd></div><div class="cr-row"><dt>Room 06</dt><dd>Finance</dd></div><div class="cr-row"><dt>Room 07</dt><dd>Agency</dd></div></dl>
-            <p class="cr-head tc">Selected films</p>
-            <ul class="cr-films"><li>Empty Chair</li><li>Trophy</li><li>JO80</li><li>Khamzat</li><li>Khamrah Dukhan</li><li>ARD</li><li>Fear</li></ul>
-            <dl class="cr-block"><div class="cr-row"><dt>Camera</dt><dd><em>the eye</em></dd></div><div class="cr-row"><dt>Crew</dt><dd>the models</dd></div><div class="cr-row"><dt>Shot in</dt><dd>Amman, Jordan</dd></div></dl>
-            <p class="cr-fine">No sets were built and no shoot was booked for these films. Every frame was lit, framed and cut by hand.</p>
-          </div>
-          <div class="cr-final" id="crFinal">
-            <svg class="cr-logo" aria-hidden="true"><use href="#uf"/></svg>
-            <p class="cr-end"><em>The end.</em></p>
-            <p class="cr-thanks">Thank you for watching.</p>
-            <p class="cr-run tc">Your running time <b id="crRun">00:00</b></p>
-          </div>
-        </div>
-      </div>
-    </div>
     <div class="wrap closing-fine">
       <span>© 2026 Unmade Films AI. Amman, Jordan.</span>
       <span><em>the tool changed. the eye didn't.</em></span>
@@ -644,6 +635,6 @@
 <script src="js/vendor/gsap.min.js" defer></script>
 <script src="js/vendor/ScrollTrigger.min.js" defer></script>
 <script src="js/vendor/lenis.min.js" defer></script>
-<script src="js/main.js?v=27" defer></script>
+<script src="js/main.js?v=28" defer></script>
 </body>
 </html>

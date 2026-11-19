@@ -14,9 +14,10 @@
     'form.sending': 'Sending your submission to the director…',
     'form.sent': "Received. Your submission is on the director's desk; you'll hear back within two working days.",
     'form.mailto': "Your email app should open with the submission filled in. If it didn't, write to dawood@unmadefilmsai.com.",
-    'room.night.fine': 'Night in the studio. Hover a room to bring the morning in.',
-    'room.night.touch': 'Night in the studio. Tap a room to bring the morning in.',
-    'room.morning': 'Morning in {r}.',
+    'room.night': 'Night in the studio. Click a room to bring the morning in.',
+    'room.day': 'Day in the studio. Click a room to turn its lights down for the night.',
+    'room.morning': 'Morning in the {r} room.',
+    'room.evening': 'Night falls in the {r} room.',
     'stage.from': 'From the film {f}',
     'flash.on': 'Flash on. Switch to the dark theme', 'flash.off': 'Flash off. Switch to the light theme',
     'flash.state.on': 'On', 'flash.state.off': 'Off',
@@ -176,6 +177,7 @@
     if (light) root.dataset.theme = 'light'; else delete root.dataset.theme;
     try { localStorage.setItem('uf-theme', light ? 'light' : 'dark'); } catch (_) {}
     syncFlash();
+    document.dispatchEvent(new Event('uf:theme'));
   };
   syncFlash();
   let flashBusy = false;
@@ -292,8 +294,8 @@
   /* ---------- keep the nav clear of the lens at every width ---------- */
   const fitNav = () => {
     nav.classList.remove('fit-1', 'fit-2', 'fit-3');
-    if (innerWidth <= 900) return;                        // phones use the menu
-    const mid = nav.clientWidth / 2, clear = 67 + 22;     // lens radius + breathing room
+    if (innerWidth <= 900) { nav.classList.add('fit-1', 'fit-2', 'fit-3'); return; }   // phones use the menu
+    const mid = nav.clientWidth / 2, clear = lensEl.offsetWidth / 2 + 34;  // the mark + its clear space
     const end = $('.nav-end'), left = $('.nav-left');
     const collides = () => end.getBoundingClientRect().left < mid + clear || left.getBoundingClientRect().right > mid - clear;
     if (collides()) nav.classList.add('fit-1');
@@ -582,152 +584,85 @@
       .from('.tiles li', { y: 90, opacity: 0, rotation: i => [-14, 10, -8, 14][i], duration: 1.1, stagger: .08, ease: 'back.out(1.6)' }, .8);
     G.from('.sub', { y: 70, opacity: 0, duration: 1.3, ease: 'expo.out', scrollTrigger: { trigger: '.sub', start: 'top 85%' } });
 
-    // end credits roll with the scroll
-    // the screen holds while the credits roll through the frame, then the end card
-    const credits = $('#credits'), crFrame = $('#crFrame'), crRoll = $('#crRoll'), crFinal = $('#crFinal'), crCue = $('#crCue'), crTc = $('#crTc');
-    const crDist = () => crFrame.offsetHeight + crRoll.offsetHeight;
-    G.timeline({ scrollTrigger: { trigger: credits, start: 'top top', end: () => '+=' + Math.round(crDist() * 1.25 + innerHeight * .5),
-        pin: true, scrub: .6, invalidateOnRefresh: true, onUpdate: st => { crTc.textContent = tc(st.progress * 96); } } })
-      .fromTo(crRoll, { y: () => crFrame.offsetHeight }, { y: () => -crRoll.offsetHeight, ease: 'none', duration: 1 }, 0)
-      // the reel-change cue: two flashes in the corner before the last reel ends
-      .to(crCue, { keyframes: [{ opacity: .9, duration: .012 }, { opacity: 0, duration: .02 }, { opacity: .9, duration: .012 }, { opacity: 0, duration: .02 }] }, .8)
-      .fromTo(crFinal, { opacity: 0, scale: .96 }, { opacity: 1, scale: 1, duration: .2, ease: 'power2.out' }, .96)
-      .add(() => {}, 1.2);
-    ST.create({ trigger: credits, start: 'top 60%', onEnter: () => { $('#crRun').textContent = $('#runTime').textContent; },
-      onUpdate: () => { $('#crRun').textContent = $('#runTime').textContent; } });
   } else {
     document.documentElement.classList.add('no-roll');
   }
 
-  /* ---------- studio: night, and one room at a time in morning light ---------- */
-  const rooms = $$('#rooms li'), house = $('#house'), days = $$('.h-day', house), pop = $('#roomPop');
+  /* ---------- studio: seven rooms, night or day with the theme; a click turns one over ---------- */
+  const rooms = $$('#rooms li'), house = $('#house'), tiles = $$('.hx', house), pop = $('#roomPop');
   const hint = $('#houseHint'), hintTxt = $('span', hint), hintIcon = $('use', hint);
-  const HW = 16.65, HH = 20.25;
-  const hex = (cx, cy, k = 1.015) => {
-    const w = HW * k, h = HH * k;
-    return `polygon(${cx}% ${cy - h}%, ${cx + w}% ${cy - h / 2}%, ${cx + w}% ${cy + h / 2}%, ${cx}% ${cy + h}%, ${cx - w}% ${cy + h / 2}%, ${cx - w}% ${cy - h / 2}%)`;
+  const flipped = new Set();                            // rooms switched away from the theme's time of day
+  const isDay = i => (root.dataset.theme === 'light') !== flipped.has(i);
+  const roomName = i => $('b', rooms[i]).textContent;
+  const label = i => `${roomName(i)}. ${isDay(i) ? 'Day' : 'Night'}. Switch to ${isDay(i) ? 'night' : 'day'}.`;
+  const paintRooms = () => {
+    tiles.forEach((t, i) => { t.classList.toggle('day', isDay(i)); t.setAttribute('aria-label', label(i)); t.setAttribute('aria-pressed', flipped.has(i) ? 'true' : 'false'); });
+    const light = root.dataset.theme === 'light';
+    hintIcon.setAttribute('href', light ? '#i-sun' : '#i-moon');
+    hintTxt.textContent = T(light ? 'room.day' : 'room.night');
   };
-  // a real daytime render (set data-day="media/…" on #house) replaces the code-graded day
-  if (house.dataset.day) {
-    const probe = new Image();
-    probe.onload = () => { days.forEach(d => { $('img', d).src = probe.src; }); house.classList.add('has-day'); };
-    probe.src = house.dataset.day;
-  }
-  const nightHint = () => T(fine ? 'room.night.fine' : 'room.night.touch');
-  hintTxt.textContent = nightHint();
-  let current = null, layer = 0, sticky = false;
-  function lightOn(li) {
-    if (current === li && house.classList.contains('lit')) return;
-    const cx = +li.dataset.x, cy = +li.dataset.y, i = rooms.indexOf(li);
-    layer = 1 - layer;
-    const next = days[layer], prev = days[1 - layer];
-    next.style.transition = 'none'; next.classList.remove('on'); next.style.clipPath = hex(cx, cy); void next.offsetWidth; next.style.transition = '';
-    next.classList.add('on'); prev.classList.remove('on');
-    current = li;
-    rooms.forEach(r => r.classList.toggle('on', r === li));
-    house.classList.add('lit');
-    pop.style.left = cx + '%';
-    pop.style.top = (cy - HH + 4) + '%';
-    $('#rpName').textContent = $('b', li).textContent;
+  let shown = -1;
+  const showPop = i => {
+    shown = i; const t = tiles[i], li = rooms[i];
+    tiles.forEach((x, k) => x.classList.toggle('hl', k === i)); rooms.forEach((r, k) => r.classList.toggle('on', k === i));
+    pop.style.left = `calc(${t.style.getPropertyValue('--x')} + 16.667%)`;
+    pop.style.top = `calc(${t.style.getPropertyValue('--y')} + 6%)`;
+    $('#rpName').textContent = roomName(i);
     $('#rpDesc').textContent = li.querySelector('span:last-child').textContent;
-    $('#rpTime').textContent = li.dataset.time;
+    $('#rpTime').textContent = isDay(i) ? li.dataset.time : '22:00';
+    $('#rpLight').textContent = isDay(i) ? 'morning light' : 'night';
+    $('#rpIcon').setAttribute('href', isDay(i) ? '#i-sun' : '#i-moon');
     $('#rpNo').textContent = `ROOM ${pad2(i + 1)} / 07`;
-    hintIcon.setAttribute('href', '#i-sun');
-    hintTxt.textContent = T('room.morning', { r: $('b', li).textContent });
-  }
-  function lightOff() {
-    if (sticky || !current) return;
-    days.forEach(d => d.classList.remove('on'));
-    house.classList.remove('lit');
-    rooms.forEach(r => r.classList.remove('on'));
-    hintIcon.setAttribute('href', '#i-moon');
-    hintTxt.textContent = nightHint();
-    current = null;
-  }
-  const roomAt = (x, y) => rooms.find(li => {
-    const dx = Math.abs(x - li.dataset.x), dy = Math.abs(y - li.dataset.y);
-    return dx <= HW && dy <= HH - dx * (HH / 2) / HW;
+    house.classList.add('lit');
+  };
+  const hidePop = () => { shown = -1; house.classList.remove('lit'); tiles.forEach(x => x.classList.remove('hl')); rooms.forEach(r => r.classList.remove('on')); };
+  const flip = i => {
+    if (flipped.has(i)) flipped.delete(i); else flipped.add(i);
+    paintRooms(); showPop(i);
+    hintTxt.textContent = T(isDay(i) ? 'room.morning' : 'room.evening', { r: roomName(i) });
+    hintIcon.setAttribute('href', isDay(i) ? '#i-sun' : '#i-moon');
+  };
+  tiles.forEach((t, i) => {
+    t.addEventListener('click', () => flip(i));
+    t.addEventListener('mouseenter', () => showPop(i));
+    t.addEventListener('focus', () => showPop(i));
+    t.addEventListener('blur', hidePop);
   });
-  rooms.forEach(li => {
-    li.tabIndex = 0;
-    li.setAttribute('role', 'button');
-    li.addEventListener('mouseenter', () => { sticky = false; lightOn(li); });
-    li.addEventListener('focus', () => lightOn(li));
-    li.addEventListener('blur', () => { sticky = false; lightOff(); });
-    li.addEventListener('click', () => { if (!fine) { if (current === li) { sticky = false; lightOff(); } else { sticky = true; lightOn(li); } } });
-    li.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); lightOn(li); } });
+  house.addEventListener('mouseleave', hidePop);
+  rooms.forEach((li, i) => {
+    li.tabIndex = 0; li.setAttribute('role', 'button');
+    li.addEventListener('mouseenter', () => showPop(i));
+    li.addEventListener('mouseleave', hidePop);
+    li.addEventListener('click', () => flip(i));
+    li.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(i); } });
   });
-  $('#rooms').addEventListener('mouseleave', lightOff);
-  house.addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse') return;
-    const r = house.getBoundingClientRect();
-    const li = roomAt((e.clientX - r.left) / r.width * 100, (e.clientY - r.top) / r.height * 100);
-    if (li) lightOn(li); else lightOff();
-  });
-  house.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') lightOff(); });
-  house.addEventListener('click', e => {
-    if (fine) return;
-    const r = house.getBoundingClientRect();
-    const li = roomAt((e.clientX - r.left) / r.width * 100, (e.clientY - r.top) / r.height * 100);
-    if (li && li !== current) { sticky = true; lightOn(li); } else { sticky = false; lightOff(); }
-  });
+  // a new theme sets the whole studio to its time of day again
+  document.addEventListener('uf:theme', () => { flipped.clear(); paintRooms(); if (shown >= 0) showPop(shown); });
+  paintRooms();
 
   /* ---------- process: a pinned production monitor scrubbed by the scroll ---------- */
   const prPin = $('#prPin'), steps = $$('#steps li'), prImgs = $$('#prGate img'), prNodes = $$('.pr-node');
-  const prReel = $('#prReel'), prFill = $('#prFill'), prDot = $('#prDot'), prTc = $('#prTc'), prGate = $('#prGate'), prBlur = $('#prWhipBlur'), prFlash = $('#prFlash');
+  const prReel = $('#prReel'), prFill = $('#prFill'), prDot = $('#prDot'), prTc = $('#prTc');
   const PHASES = steps.map(li => li.querySelector('.pr-phase').lastChild.textContent.toUpperCase());
   let prK = -1, prST = null;
-  // the cut between shots: an old projector. The picture warms to print stock and flickers,
-  // the film slips one frame through the gate (frame line and sprocket holes rolling past
-  // under a vertical smear), then the gate weaves, the light steadies and the colour returns.
-  const prMon = $('.pr-monitor'), prFline = $('#prFline'), prPerfs = [$('#prPerfL'), $('#prPerfR')], prScratch = $('#prScratch');
-  const setBlur = v => prBlur.setAttribute('stdDeviation', `0 ${v.toFixed(1)}`);
-  const whip = (from, to, dir) => {
+  // the change between shots: a slow dissolve while the camera keeps a gentle push in.
+  // Both frames stay whole and keep their own colour; the new one simply arrives over the old.
+  const whip = (from, to) => {
     prImgs.forEach((m, i) => m.classList.toggle('on', i === to));
     if (!G || reduce || from < 0) {
       prImgs.forEach((m, i) => { m.style.opacity = i === to ? 1 : 0; });
-      if (G && !reduce) G.fromTo(prImgs[to], { scale: 1.06 }, { scale: 1, duration: 7, ease: 'power1.out' });
+      if (G && !reduce) G.fromTo(prImgs[to], { scale: 1 }, { scale: 1.04, duration: 9, ease: 'none' });
       return;
     }
-    const out = prImgs[from], inn = prImgs[to], d = dir < 0 ? -1 : 1;
-    const H = prGate.offsetHeight, roll = { t: 0, b: 0 }, look = { s: 0 };
-    G.killTweensOf([...prImgs, prFlash, prGate, prFline, prScratch, roll, look]);
-    prImgs.forEach(m => { if (m !== out && m !== inn) G.set(m, { opacity: 0, yPercent: 0, scale: 1 }); });
-    G.set(out, { opacity: 1, yPercent: 0 }); G.set(inn, { opacity: 1, yPercent: 100 * d, scale: 1 });
-    const paint = () => {
-      const t = roll.t;
-      G.set(out, { yPercent: -100 * t * d }); G.set(inn, { yPercent: 100 * d * (1 - t) });
-      const seam = d > 0 ? (1 - t) * H : t * H;                 // where the two frames meet
-      prFline.style.transform = `translateY(${(seam - prFline.offsetHeight / 2).toFixed(1)}px)`;
-      prPerfs.forEach(el => { el.style.backgroundPositionY = `${(-t * H * d).toFixed(1)}px`; });
-      setBlur(roll.b);
-    };
-    const grade = () => {
-      const v = look.s;
-      prGate.style.filter = `url(#prWhip) sepia(${(.7 * v).toFixed(2)}) contrast(${(1 + .25 * v).toFixed(2)}) saturate(${(1 - .35 * v).toFixed(2)}) brightness(${(1 + .08 * v).toFixed(2)})`;
-    };
-    prMon.classList.add('rolling');
-    G.timeline({ onComplete: () => { prMon.classList.remove('rolling'); prGate.style.filter = ''; setBlur(0); prFline.style.opacity = 0; } })
-      .to(look, { s: 1, duration: .14, ease: 'power1.out', onUpdate: grade }, 0)
-      .set(prFline, { opacity: 1 }, .08)
-      // the slip: fast, with a hint of the next frame catching too far before the claw settles it
-      .to(roll, { t: 1.045, duration: .42, ease: 'power3.inOut', onUpdate: paint }, .08)
-      .to(roll, { b: 22, duration: .2, ease: 'power2.in', onUpdate: paint }, .08)
-      .to(roll, { b: 0, duration: .26, ease: 'power2.out', onUpdate: paint }, .3)
-      .to(roll, { t: 1, duration: .16, ease: 'power2.out', onUpdate: paint }, .5)
-      .set(prFline, { opacity: 0 }, .66)
-      // projector flicker
-      .fromTo(prFlash, { opacity: 0 }, { keyframes: [{ opacity: .32, duration: .04 }, { opacity: .05, duration: .05 }, { opacity: .22, duration: .04 }, { opacity: 0, duration: .08 }] }, .06)
-      .fromTo(prFlash, { opacity: 0 }, { keyframes: [{ opacity: .14, duration: .05 }, { opacity: 0, duration: .07 }] }, .62)
-      .fromTo(prScratch, { opacity: 0, backgroundPositionX: '0px' }, { opacity: .8, backgroundPositionX: `${Math.round(Math.random() * 400)}px`, duration: .5, ease: 'steps(6)' }, .06)
-      .to(prScratch, { opacity: 0, duration: .3 }, .62)
-      // gate weave as it settles
-      .to(prGate, { keyframes: [{ y: -2, x: 1, duration: .05 }, { y: 1.5, x: -1, duration: .05 }, { y: -1, x: 0, duration: .05 }, { y: 0, x: 0, duration: .06 }] }, .62)
-      // the colour comes back, the shot slowly pushes in
-      .to(look, { s: 0, duration: .7, ease: 'power2.inOut', onUpdate: grade }, .7)
-      .set(out, { opacity: 0, yPercent: 0 }, .66)
-      .fromTo(inn, { scale: 1 }, { scale: 1.04, duration: 7, ease: 'power1.out' }, .7);
-    sfx.play('tick');
+    const out = prImgs[from], inn = prImgs[to];
+    G.killTweensOf(prImgs.filter(m => m !== out));
+    prImgs.forEach(m => { if (m !== out && m !== inn) G.set(m, { opacity: 0, zIndex: 0, scale: 1 }); });
+    G.set(out, { zIndex: 1 });
+    G.set(inn, { zIndex: 2, opacity: 0, scale: 1 });
+    G.timeline()
+      .to(inn, { opacity: 1, duration: .9, ease: 'power1.inOut' }, 0)
+      .to(inn, { scale: 1.04, duration: 9, ease: 'none' }, 0)
+      .add(() => { G.killTweensOf(out); G.set(out, { opacity: 0, scale: 1, zIndex: 0 }); }, .95);
   };
   const setStep = (k, dir = 1) => {
     if (k === prK) return;
